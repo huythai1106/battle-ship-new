@@ -1,5 +1,5 @@
 from .rect import Rect
-import pygame
+from game import Game
 
 
 class Battle:
@@ -7,8 +7,9 @@ class Battle:
         self.x = x
         self.y = y
         self.status = status
-        self.game = game
+        self.game: Game = game
         self.rects = []
+        self.ships = []
         self.setup()
 
     def setup(self):
@@ -20,9 +21,18 @@ class Battle:
 
         # pygame.display.update()
 
+    def setupShip(self):
+        pass
+
     def draw(self, win):
-        for rect in self.rects:
-            rect.draw(win)
+        if self.game.getStatus() == 1:
+            for rect in self.rects:
+                rect.draw(win)
+            for ship in self.ships:
+                ship.draw(ship)
+        elif self.game.getStatus() == 2:
+            for rect in self.rects:
+                rect.draw(win)
 
     def changeStatus(self):
         self.status = not self.status

@@ -15,3 +15,9 @@ def read_pos(str):
 
 def make_pos(tup):
     return str(tup[0]) + "," + str(tup[1])
+
+
+orange = (225, 93, 14)
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (255, 0, 0)
