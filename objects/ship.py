@@ -94,6 +94,5 @@ class Ship:
                 return False
         return True
 
-    def isEnableSet(self, pos):
-        if not self.active or self.isSet:
-            return False
+    def isEnableSet(self):
+        return self.active and not self.isSet

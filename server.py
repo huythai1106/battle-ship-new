@@ -41,7 +41,6 @@ def threaded_client(conn, p, gameId):
                     if data == "reset":
                         game.resetWent()
                     elif data != "get":
-                        print(data)
                         game.play(p, data)
 
                     # reply = game

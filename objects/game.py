@@ -3,13 +3,13 @@ from until import *
 
 # trung gian cua game
 
-"""
-    status game :
-    0 : waiting player
-    1 : waiting player setup
-    2 : play game
-    3 : finish game
-"""
+# """
+#     status game :
+#     0 : waiting player
+#     1 : waiting player setup
+#     2 : play game
+#     3 : finish game
+# """
 
 
 class Game:
