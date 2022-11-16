@@ -17,7 +17,6 @@ class Network:
         try:
             self.client.connect(self.addr)
             a = self.client.recv(2048).decode()
-            print(a)
             return a
         except:
             pass
@@ -27,6 +26,7 @@ class Network:
             # print(data)
             self.client.send(str.encode(data))
             data1 = pickle.loads(self.client.recv(4096))
+            print(data1)
             return data1
         except socket.error as e:
             print(e)

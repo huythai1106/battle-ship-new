@@ -22,8 +22,8 @@ class Game:
         self.click = False
         self.ready = False
         self.id = id
-        self.maps = [Battle(50, 250, True, self),  Battle(
-            400, 250, False, self)]  # map trong 1 game
+        self.maps: list[Battle] = [Battle(50, 250, 0, self),  Battle(
+            400, 250, 1, self)]  # map trong 1 game
         # self.moves = [None, None]
         self.wins = [0, 0]
         self.ties = 0
@@ -41,14 +41,37 @@ class Game:
     def play(self, player, data):
         # self.moves[player] = move
         # self.maps[player] = Map()
-        if data == "ready":
-            if (player == 0):
-                self.p1Ready = True
+        if self.getStatusGame() == 1:
+            if data == "ready":
+                if (player == 0):
+                    self.p1Ready = True
+                else:
+                    self.p2Ready = True
+                self.maps[player].isSetting = False
+            elif data == "changeDirection":
+                for ship in self.maps[player].ships:
+                    if ship.active:
+                        ship.changeDirection()
             else:
-                self.p2Ready = True
-        else:
+                pos = read_pos(data)
+                for ship in self.maps[player].ships:
+                    if ship.changeActive(pos):
+                        print("123123 active")
+
+                for rect in self.maps[player].rects:
+                    if rect.click(pos):
+                        x = rect.x
+                        y = rect.y
+                        for ship in self.maps[player].ships:
+                            if ship.isEnableSet():
+                                print("changPos")
+                                ship.changePos((x, y))
+                                ship.isSet = True
+                                ship.active = False
+                                ship.changeColorActive()
+
+        elif self.getStatusGame() == 2:
             pos = read_pos(data)
-            print(pos)
             if player == 0 and self.click == False:
                 if self.maps[1].gainAttack(pos):
                     self.click = True
@@ -61,9 +84,6 @@ class Game:
 
     def bothWent(self):
         return self.p1Went and self.p2Went
-
-    def getStatus(self):
-        return self.status
 
     def winner(self):
         winner = -1

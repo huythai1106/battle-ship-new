@@ -27,7 +27,7 @@ def threaded_client(conn, p, gameId):
 
     while True:
         try:
-            data = conn.recv(4096).decode()
+            data = conn.recv(2048).decode()
             if gameId in games:
                 game = games[gameId]
                 if p == 0:
@@ -41,7 +41,7 @@ def threaded_client(conn, p, gameId):
                     if data == "reset":
                         game.resetWent()
                     elif data != "get":
-                        print(p, data)
+                        print(data)
                         game.play(p, data)
 
                     # reply = game

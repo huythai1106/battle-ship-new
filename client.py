@@ -106,8 +106,6 @@ def main():
             print("Couldn't get game1")
             break
 
-        print(game.getStatusGame())
-
         # khi ca 2 player chon
         if game.bothWent():
             redrawWindow(win, game, player)
@@ -128,6 +126,11 @@ def main():
                             except pygame.error as e:
                                 run = False
                                 print(e)
+                        else:
+                            n.send(make_pos(pos))
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_DOWN or event.key == pygame.K_w:
+                            n.send("changeDirection")
 
             elif game.getStatusGame() == 2:
                 for event in pygame.event.get():

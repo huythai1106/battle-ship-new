@@ -3,10 +3,12 @@ from until import click
 
 
 class Rect:
-    def __init__(self, x, y, color) -> None:
+    def __init__(self, x, y, color, index) -> None:
         self.x = x
         self.y = y
+        self.index = index
         self.color = color
+        self.isActive = False
         self.rect = (x, y, 50, 50)
 
     def setup(self):

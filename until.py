@@ -17,6 +17,16 @@ def make_pos(tup):
     return str(tup[0]) + "," + str(tup[1])
 
 
+def convertNumToPos(number, length):
+    x = number // length
+    y = number % length
+    return (x, y)
+
+
+def convertPosToNum(tup, len):
+    return tup[0] * len + tup[1]
+
+
 orange = (225, 93, 14)
 white = (255, 255, 255)
 black = (0, 0, 0)
