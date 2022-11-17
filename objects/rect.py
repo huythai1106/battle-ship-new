@@ -1,5 +1,5 @@
 import pygame
-from until import click
+from utils import *
 
 
 class Rect:
@@ -8,8 +8,9 @@ class Rect:
         self.y = y
         self.index = index
         self.color = color
-        self.isActive = False
-        self.rect = (x, y, 50, 50)
+        self.isActive = False  # use when status game = 1 (setup game)
+        self.isAttacked = False  # use when status game = 2 (play game)
+        self.rect = (x, y, WEIGHT, WEIGHT)
 
     def setup(self):
         pass
@@ -19,7 +20,7 @@ class Rect:
         pygame.draw.rect(win, self.color, self.rect)
 
     def update(self):
-        self.rect = (self.x, self.y, 50, 50)
+        self.rect = (self.x, self.y, WEIGHT, WEIGHT)
 
     def changeColor(self, color):
         self.color = color
@@ -27,7 +28,7 @@ class Rect:
     def click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
-        if (self.x <= x1 < + self.x + 50) and (self.y <= y1 < + self.y + 50):
+        if (self.x <= x1 < + self.x + WEIGHT) and (self.y <= y1 < + self.y + WEIGHT):
             return True
         else:
             return False

@@ -1,5 +1,4 @@
-from until import *
-import pygame
+from utils import *
 from .rect import Rect
 # from .battle import Battle
 
@@ -21,11 +20,13 @@ class Ship:
     def setup(self):
         if self.direct == "vertical":
             for i in range(self.length):
-                rect = Rect(self.x + i * 55, self.y, orange, i)
+                rect = Rect(self.x + i * (WEIGHT +
+                            LINE_WEIGHT), self.y, ORANGE, i)
                 self.rects.append(rect)
         else:
             for i in range(self.length):
-                rect = Rect(self.x, self.y + i * 55, orange, i)
+                rect = Rect(self.x, self.y + i *
+                            (WEIGHT + LINE_WEIGHT), ORANGE, i)
                 self.rects.append(rect)
 
     def changeDirection(self):
@@ -37,11 +38,11 @@ class Ship:
         if self.direct == "vertical":
             for i in range(self.length):
                 self.rects[i].y = self.y
-                self.rects[i].x = self.x + i*55
+                self.rects[i].x = self.x + i * (WEIGHT + LINE_WEIGHT)
                 self.rects[i].update()
         else:
             for i in range(self.length):
-                self.rects[i].y = self.y + i * 55
+                self.rects[i].y = self.y + i * (WEIGHT + LINE_WEIGHT)
                 self.rects[i].x = self.x
                 self.rects[i].update()
 
@@ -53,9 +54,9 @@ class Ship:
         for rect in self.rects:
             if self.active == True:
                 self.battle.isClickShip = True
-                rect.color = red
+                rect.color = RED
             else:
-                rect.color = orange
+                rect.color = ORANGE
                 self.battle.isClickShip = False
 
     def changeActive(self, pos):

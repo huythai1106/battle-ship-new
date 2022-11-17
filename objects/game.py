@@ -1,5 +1,5 @@
 from .battle import Battle
-from until import *
+from utils import *
 
 # trung gian cua game
 
@@ -58,17 +58,21 @@ class Game:
                     if ship.changeActive(pos):
                         print("123123 active")
 
+                # set Ship in map
                 for rect in self.maps[player].rects:
-                    if rect.click(pos):
+                    if rect.isActive == False and rect.click(pos):
                         x = rect.x
                         y = rect.y
+                        index = rect.index
                         for ship in self.maps[player].ships:
-                            if ship.isEnableSet():
+                            if ship.isEnableSet() and self.checkIsSet(index, ship.length, ship.direct, player):
                                 print("changPos")
                                 ship.changePos((x, y))
                                 ship.isSet = True
                                 ship.active = False
                                 ship.changeColorActive()
+
+                                # set rect active in map
 
         elif self.getStatusGame() == 2:
             pos = read_pos(data)
@@ -79,6 +83,30 @@ class Game:
                 if self.maps[0].gainAttack(pos):
                     self.click = False
 
+    def checkIsSet(self, index, length, direct, player):
+        x = convertNumToPos(index, SIZE)[0]
+        y = convertNumToPos(index, SIZE)[1]
+        print(x, y)
+        if direct == "vertical":
+            if x + length > SIZE:
+                return False
+            for i in range(length):
+                x1 = x + i
+                print(x1)
+                index1 = convertPosToNum((x1, y), SIZE)
+                print(index1)
+                self.maps[player].rects[index1].isActive = True
+            return True
+        else:
+            if y + length > SIZE:
+                return False
+            for i in range(length):
+                y1 = y + i
+                print(y1)
+                index1 = convertPosToNum((x, y1), SIZE)
+                self.maps[player].rects[index1].isActive = True
+            return True
+
     def connected(self):
         return self.ready
 
@@ -87,7 +115,6 @@ class Game:
 
     def winner(self):
         winner = -1
-
         return winner
 
     def resetWent(self):

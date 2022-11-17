@@ -27,7 +27,11 @@ def convertPosToNum(tup, len):
     return tup[0] * len + tup[1]
 
 
-orange = (225, 93, 14)
-white = (255, 255, 255)
-black = (0, 0, 0)
-red = (255, 0, 0)
+ORANGE = (225, 93, 14)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+SIZE = 10
+WEIGHT = 25
+LINE_WEIGHT = 2

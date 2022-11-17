@@ -1,6 +1,7 @@
 from .rect import Rect
 # from .game import Game
 from .ship import Ship
+from utils import *
 
 
 class Battle:
@@ -9,7 +10,7 @@ class Battle:
         self.y = y
         self.idMap = idMap
         self.game = game
-        self.rects = []
+        self.rects: list[Rect] = []
         self.isClickShip = False
         self.ships: list[Ship] = []
         self.isSetting = True
@@ -18,10 +19,10 @@ class Battle:
 
     def setup(self):
         i = 0
-        for x in range(5):
-            for y in range(5):
-                rect = Rect(self.x + 55*x,
-                            self.y + 55*y, (255, 255, 255), i)
+        for x in range(SIZE):
+            for y in range(SIZE):
+                rect = Rect(self.x + (WEIGHT + LINE_WEIGHT)*x,
+                            self.y + (WEIGHT + LINE_WEIGHT)*y, WHITE, i)
                 i += 1
                 self.rects.append(rect)
 

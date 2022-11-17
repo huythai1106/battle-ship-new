@@ -1,7 +1,7 @@
 import pygame
 from network import Network
 from objects.button import Button
-from until import *
+from utils import *
 pygame.font.init()
 
 width = 700
@@ -80,6 +80,9 @@ def redrawWindow(win, game, p):
 
             for battle in game.maps:
                 battle.draw(win)
+                if battle.idMap == p:
+                    for ship in battle.ships:
+                        ship.draw(win)
 
     pygame.display.update()
 
