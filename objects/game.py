@@ -21,6 +21,7 @@ class Game:
         self.p2Ready = False
         self.click = False
         self.ready = False
+        self.finish = False
         self.id = id
         self.maps: list[Battle] = [Battle(50, 250, 0, self),  Battle(
             400, 250, 1, self)]  # map trong 1 game
@@ -29,7 +30,9 @@ class Game:
         self.ties = 0
 
     def getStatusGame(self):
-        if self.p1Ready and self.p2Ready:
+        if self.finish:
+            self.status = 3
+        elif self.p1Ready and self.p2Ready:
             self.status = 2
         elif self.p1Went and self.p2Went:
             self.status = 1
@@ -43,11 +46,12 @@ class Game:
         # self.maps[player] = Map()
         if self.getStatusGame() == 1:
             if data == "ready":
-                if (player == 0):
-                    self.p1Ready = True
-                else:
-                    self.p2Ready = True
-                self.maps[player].isSetting = False
+                if self.maps[player].isSetAllShip():
+                    if (player == 0):
+                        self.p1Ready = True
+                    else:
+                        self.p2Ready = True
+                # self.maps[player].isSetting = False
             elif data == "changeDirection":
                 for ship in self.maps[player].ships:
                     if ship.active:
@@ -92,19 +96,26 @@ class Game:
                 return False
             for i in range(length):
                 x1 = x + i
-                print(x1)
-                index1 = convertPosToNum((x1, y), SIZE)
-                print(index1)
-                self.maps[player].rects[index1].isActive = True
+                for numX in (-1, 0, 1):
+                    for numY in (-1, 0, 1):
+                        xNum = x1 + numX
+                        yNum = y + numY
+                        if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
+                            index1 = convertPosToNum((xNum, yNum), SIZE)
+                            self.maps[player].rects[index1].isActive = True
             return True
         else:
             if y + length > SIZE:
                 return False
             for i in range(length):
                 y1 = y + i
-                print(y1)
-                index1 = convertPosToNum((x, y1), SIZE)
-                self.maps[player].rects[index1].isActive = True
+                for numX in (-1, 0, 1):
+                    for numY in (-1, 0, 1):
+                        xNum = x + numX
+                        yNum = y1 + numY
+                        if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
+                            index1 = convertPosToNum((xNum, yNum), SIZE)
+                            self.maps[player].rects[index1].isActive = True
             return True
 
     def connected(self):
@@ -115,6 +126,12 @@ class Game:
 
     def winner(self):
         winner = -1
+
+        if self.maps[0].checkResultBattle():
+            winner = 1
+        elif self.maps[1].checkResultBattle():
+            winner = 0
+
         return winner
 
     def resetWent(self):

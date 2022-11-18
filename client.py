@@ -140,16 +140,27 @@ def main():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         pos = pygame.mouse.get_pos()
                         n.send(make_pos(pos))
+            elif game.getStatusGame() == 3:
+                # try:
+                #     game = n.send("reset")
+                # except:
+                #     run = False
+                #     print("Couldn't get game2")
+                #     break
 
-            # font = pygame.font.SysFont("comicsans", 90)
-            # if (game.winner() == 0 and player == 0) or (game.winner() == 1 and player == 1):
-            #     text = font.render("You won", 1, (255, 0, 0))
-            # elif (game.winner() == -1):
-            #     text = text = font.render("Tie game!", 1, (255, 0, 0))
-            # else:
-            #     text = font.render("You lost ...", 1, (255, 0, 0))
-            # win.blit(text, (width / 2 - text.get_width() /
-            #          2, height / 2 - text.get_height() / 2))
+                pygame.time.delay(500)
+                font = pygame.font.SysFont("comicsans", 90)
+                if (game.winner() == 0 and player == 0) or (game.winner() == 1 and player == 1):
+                    text = font.render("You won", 1, (255, 0, 0))
+                elif (game.winner() == -1):
+                    text = text = font.render("Tie game!", 1, (255, 0, 0))
+                else:
+                    text = font.render("You lost ...", 1, (255, 0, 0))
+                win.blit(text, (width / 2 - text.get_width() /
+                         2, height / 2 - text.get_height() / 2))
+                pygame.display.update()
+                pygame.time.delay(2000)
+
             pygame.display.update()
 
         for event in pygame.event.get():

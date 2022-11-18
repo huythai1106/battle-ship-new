@@ -13,7 +13,7 @@ class Battle:
         self.rects: list[Rect] = []
         self.isClickShip = False
         self.ships: list[Ship] = []
-        self.isSetting = True
+        # self.isSetting = True
         self.setup()
         self.setupShip()
 
@@ -64,8 +64,24 @@ class Battle:
 
     def gainAttack(self, pos):
         for rect in self.rects:
-            if rect.click(pos):
-                rect.changeColor((255, 0, 0))
+            if rect.click(pos) and not rect.isAttacked:
+                rect.changeColor(RED)
+                rect.isAttacked = True
+                i = 0
+                for ship in self.ships:
+                    if ship.checkDead():
+                        continue
+
+                    if ship.checkAttack(pos):
+                        rect.changeColor(BLACK)
+
+                    if ship.checkDead():
+                        print("dead 1", i)
+                        i += 1
+                        if self.checkResultBattle():
+                            print("lost")
+                            self.game.finish = True
+
                 return True
 
         return False
@@ -76,8 +92,18 @@ class Battle:
                 return True
         return False
 
-    def checkAllShipSet(self):
-        pass
+    def isSetAllShip(self):
+        for ship in self.ships:
+            if not ship.isSet:
+                return False
+        return True
+
+    # check KQ
+    def checkResultBattle(self):
+        for ship in self.ships:
+            if not ship.checkDead():
+                return False
+        return True
 
     def reset(self):
         pass

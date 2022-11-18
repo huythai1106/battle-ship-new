@@ -11,6 +11,7 @@ class Ship:
         self.length = length
         self.game = game
         self.battle = battle
+        self.setIndex = None
         self.x = x
         self.y = y
         self.direct = direct  # default: vertical , other value : horizon
@@ -89,9 +90,18 @@ class Ship:
             rect.y = rect.y + y1
             rect.update()
 
+    def checkAttack(self, pos):
+        for rect in self.rects:
+            if rect.click(pos):
+                rect.isAttacked = True
+                rect.changeColor(BLACK)
+                return True
+
+        return False
+
     def checkDead(self):
         for rect in self.rects:
-            if not rect.isActive:
+            if not rect.isAttacked:
                 return False
         return True
 
