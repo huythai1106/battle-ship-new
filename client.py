@@ -83,6 +83,10 @@ def redrawWindow(win, game, p):
                 if battle.idMap == p:
                     for ship in battle.ships:
                         ship.draw(win)
+                else:
+                    for ship in battle.ships:
+                        if ship.checkDead():
+                            ship.draw(win)
 
     pygame.display.update()
 

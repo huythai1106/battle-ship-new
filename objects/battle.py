@@ -51,16 +51,7 @@ class Battle:
             for rect in self.rects:
                 rect.draw(win)
 
-    # def setMap(self, x, y):
-    #     x1 = self.x
-    #     y1 = self.y
-    #     self.x = x
-    #     self.y = y
-
-    #     for rect in self.rects:
-    #         rect.x += x1 - self.x
-    #         rect.y += y1 - self.y
-    #         rect.update()
+    # return : [0, 1, 2]
 
     def gainAttack(self, pos):
         for rect in self.rects:
@@ -74,17 +65,16 @@ class Battle:
 
                     if ship.checkAttack(pos):
                         rect.changeColor(BLACK)
+                        if ship.checkDead():
+                            ship.actDead()
+                            i += 1
+                            if self.checkResultBattle():
+                                self.game.finish = True
+                        return 2
 
-                    if ship.checkDead():
-                        print("dead 1", i)
-                        i += 1
-                        if self.checkResultBattle():
-                            print("lost")
-                            self.game.finish = True
+                return 1
 
-                return True
-
-        return False
+        return 0
 
     def isClickMaps(self, pos):
         for rect in self.rects:

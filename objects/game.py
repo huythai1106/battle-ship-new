@@ -74,6 +74,7 @@ class Game:
                                 ship.changePos((x, y))
                                 ship.isSet = True
                                 ship.active = False
+                                ship.setIndex = index
                                 ship.changeColorActive()
 
                                 # set rect active in map
@@ -81,10 +82,10 @@ class Game:
         elif self.getStatusGame() == 2:
             pos = read_pos(data)
             if player == 0 and self.click == False:
-                if self.maps[1].gainAttack(pos):
+                if self.maps[1].gainAttack(pos) == 1:
                     self.click = True
             if player == 1 and self.click == True:
-                if self.maps[0].gainAttack(pos):
+                if self.maps[0].gainAttack(pos) == 1:
                     self.click = False
 
     def checkIsSet(self, index, length, direct, player):

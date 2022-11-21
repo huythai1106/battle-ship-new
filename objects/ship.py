@@ -11,10 +11,10 @@ class Ship:
         self.length = length
         self.game = game
         self.battle = battle
-        self.setIndex = None
+        self.setIndex: int = None
         self.x = x
         self.y = y
-        self.direct = direct  # default: vertical , other value : horizon
+        self.direct: str = direct  # default: vertical , other value : horizon
         self.rects: list[Rect] = []
         self.setup()
 
@@ -103,7 +103,46 @@ class Ship:
         for rect in self.rects:
             if not rect.isAttacked:
                 return False
+
+        # do something
         return True
+
+    def actDead(self):
+        index = self.setIndex
+        x = convertNumToPos(index, SIZE)[0]
+        y = convertNumToPos(index, SIZE)[1]
+        if self.direct == "vertical":
+            if x + self.length > SIZE:
+                return False
+            for i in range(self.length):
+                x1 = x + i
+                for numX in (-1, 0, 1):
+                    for numY in (-1, 0, 1):
+                        if numX == 0 and numY == 0:
+                            continue
+                        xNum = x1 + numX
+                        yNum = y + numY
+                        if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
+                            index1 = convertPosToNum((xNum, yNum), SIZE)
+                            self.battle.rects[index1].isAttacked = True
+                            self.battle.rects[index1].changeColor(RED)
+
+        else:
+            if y + self.length > SIZE:
+                return False
+            for i in range(self.length):
+                y1 = y + i
+                for numX in (-1, 0, 1):
+                    for numY in (-1, 0, 1):
+                        if numX == 0 and numY == 0:
+                            continue
+                        xNum = x + numX
+                        yNum = y1 + numY
+                        if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
+                            index1 = convertPosToNum((xNum, yNum), SIZE)
+                            # self.maps[player].rects[index1].isActive = True
+                            self.battle.rects[index1].isAttacked = True
+                            self.battle.rects[index1].changeColor(RED)
 
     def isEnableSet(self):
         return self.active and not self.isSet
