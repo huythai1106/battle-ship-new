@@ -1,5 +1,7 @@
 from .battle import Battle
 from utils import *
+import string
+import random
 
 # trung gian cua game
 

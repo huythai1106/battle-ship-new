@@ -11,6 +11,9 @@ win = pygame.display.set_mode((width, height))
 
 pygame.display.set_caption("Client")
 
+base_font = pygame.font.Font(None, 32)
+user_text: str = ''
+
 
 def redrawWindow(win, game, p):
     win.fill((128, 128, 128))  # to mau nen background
@@ -100,8 +103,16 @@ def main():
     clock = pygame.time.Clock()
     n = Network()
 
-    player = int(n.getP())
-    print("You are player", player)
+    if (user_text != ""):
+        data = n.startConnect(user_text)
+        print(data)
+    else:
+        return
+    try:
+        player = int(n.getP())
+        print("You are player", player)
+    except:
+        quit()
 
     while run:
         clock.tick(60)
@@ -176,23 +187,35 @@ def main():
 
 
 def menu_screen():
+    global user_text
+
     run = True
     clock = pygame.time.Clock()
     while run:
-        clock.tick(60)
-        win.fill((128, 128, 128))
-        font = pygame.font.SysFont("comicsans", 60)
-        text = font.render("Click to Play!", 1, (255, 0, 0))
-        win.blit(text, (100, 200))
-
-        pygame.display.update()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 run = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    user_text = user_text[:-1]
+                else:
+                    user_text += event.unicode.upper()
+
+        win.fill((128, 128, 128))
+
+        text_box = base_font.render(user_text, 1, (255, 255, 0))
+        win.blit(text_box, (100, 100))
+
+        font = pygame.font.SysFont("comicsans", 40)
+        text = font.render("Click to Play!", 1, (255, 0, 0))
+        win.blit(text, (100, 500))
+
+        pygame.display.update()
+        clock.tick(60)
+
     main()
 
 
