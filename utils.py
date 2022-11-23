@@ -27,6 +27,10 @@ def convertPosToNum(tup, len):
     return tup[0] * len + tup[1]
 
 
+def decodeByte(msg):
+    return int.from_bytes(msg, 'little')
+
+
 ORANGE = (225, 93, 14)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)

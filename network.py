@@ -13,15 +13,28 @@ class Network:
     def getP(self):
         return self.connect()
 
-    def startConnect(self, data: str):
+    def startConnect(self, data: str, type: int):
         try:
             # print(data)
             self.client.connect(self.addr)
-            self.client.send(str.encode(data))
+
+            type = int.to_bytes(type, 4, "little")
+            pk_send = type + str.encode(data)
+            self.client.send(pk_send)
             data1 = self.client.recv(2048).decode()
             return data1
         except socket.error as e:
             print(e)
+
+    # def startConnect(self, data: str):
+    #     try:
+    #         # print(data)
+    #         self.client.connect(self.addr)
+    #         self.client.send(str.encode(data))
+    #         data1 = self.client.recv(2048).decode()
+    #         return data1
+    #     except socket.error as e:
+    #         print(e)
 
     def connect(self):
         try:

@@ -13,6 +13,8 @@ pygame.display.set_caption("Client")
 
 base_font = pygame.font.Font(None, 32)
 user_text: str = ''
+text_box = pygame.Rect(100, 100, 140, 32)
+color = pygame.Color('lightskyblue3')
 
 
 def redrawWindow(win, game, p):
@@ -97,6 +99,8 @@ def redrawWindow(win, game, p):
 # 3 nut bam
 btns = Button("Submit", 250, 600, (255, 0, 255))
 
+btnPlay = Button("Play", 100, 500, (255, 0, 255))
+
 
 def main():
     run = True
@@ -104,7 +108,7 @@ def main():
     n = Network()
 
     if (user_text != ""):
-        data = n.startConnect(user_text)
+        data = n.startConnect(user_text, 0)
         print(data)
     else:
         return
@@ -197,7 +201,9 @@ def menu_screen():
                 pygame.quit()
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                run = False
+                pos = pygame.mouse.get_pos()
+                if btnPlay.click(pos):
+                    run = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     user_text = user_text[:-1]
@@ -206,12 +212,17 @@ def menu_screen():
 
         win.fill((128, 128, 128))
 
-        text_box = base_font.render(user_text, 1, (255, 255, 0))
-        win.blit(text_box, (100, 100))
+        pygame.draw.rect(win, color, text_box, 2)
 
-        font = pygame.font.SysFont("comicsans", 40)
-        text = font.render("Click to Play!", 1, (255, 0, 0))
-        win.blit(text, (100, 500))
+        text = base_font.render(user_text, 1, (255, 255, 0))
+        win.blit(text, (text_box.x + 5, text_box.y + 5))
+
+        text_box.w = max(100, text.get_width() + 10)
+        btnPlay.draw(win)
+
+        # font = pygame.font.SysFont("comicsans", 40)
+        # text = font.render("Click to Play!", 1, (255, 0, 0))
+        # win.blit(text, (100, 500))
 
         pygame.display.update()
         clock.tick(60)
