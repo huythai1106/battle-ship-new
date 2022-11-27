@@ -25,7 +25,7 @@ class Game:
         self.ready = False
         self.finish = False
         self.id = id
-        self.maps: list[Battle] = [Battle(50, 250, 0, self),  Battle(
+        self.maps: list[Battle] = [Battle(30, 250, 0, self),  Battle(
             400, 250, 1, self)]  # map trong 1 game
         # self.moves = [None, None]
         self.wins = [0, 0]
@@ -62,7 +62,7 @@ class Game:
                 pos = read_pos(data)
                 for ship in self.maps[player].ships:
                     if ship.changeActive(pos):
-                        print("123123 active")
+                        print("active")
 
                 # set Ship in map
                 for rect in self.maps[player].rects:
@@ -72,12 +72,13 @@ class Game:
                         index = rect.index
                         for ship in self.maps[player].ships:
                             if ship.isEnableSet() and self.checkIsSet(index, ship.length, ship.direct, player):
-                                print("changPos")
                                 ship.changePos((x, y))
                                 ship.isSet = True
                                 ship.active = False
                                 ship.setIndex = index
                                 ship.changeColorActive()
+                                # self.maps[player].isClickShip = False
+                                ship.setColorInMap()
 
                                 # set rect active in map
 
@@ -93,7 +94,6 @@ class Game:
     def checkIsSet(self, index, length, direct, player):
         x = convertNumToPos(index, SIZE)[0]
         y = convertNumToPos(index, SIZE)[1]
-        print(x, y)
         if direct == "vertical":
             if x + length > SIZE:
                 return False

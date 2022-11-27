@@ -2,6 +2,7 @@ from .rect import Rect
 # from .game import Game
 from .ship import Ship
 from utils import *
+from .image import Image
 
 
 class Battle:
@@ -11,8 +12,11 @@ class Battle:
         self.idMap = idMap
         self.game = game
         self.rects: list[Rect] = []
+        self.actives: list[Image] = []
         self.isClickShip = False
         self.ships: list[Ship] = []
+        self.boardGame = Image(self.x - 24, self.y - 28,
+                               "./assets/image/boardGame.png")
         # self.isSetting = True
         self.setup()
         self.setupShip()
@@ -22,7 +26,7 @@ class Battle:
         for x in range(SIZE):
             for y in range(SIZE):
                 rect = Rect(self.x + (WEIGHT + LINE_WEIGHT)*x,
-                            self.y + (WEIGHT + LINE_WEIGHT)*y, WHITE, i)
+                            self.y + (WEIGHT + LINE_WEIGHT)*y, BLUE, i)
                 i += 1
                 self.rects.append(rect)
 
@@ -42,6 +46,8 @@ class Battle:
         self.ships.append(ship1)
 
     def draw(self, win):
+        self.boardGame.draw(win)
+
         if self.game.getStatusGame() == 1:
             for rect in self.rects:
                 rect.draw(win)
@@ -51,12 +57,17 @@ class Battle:
             for rect in self.rects:
                 rect.draw(win)
 
+        for act in self.actives:
+            act.draw(win)
+
     # return : [0, 1, 2]
 
     def gainAttack(self, pos):
         for rect in self.rects:
             if rect.click(pos) and not rect.isAttacked:
-                rect.changeColor(RED)
+                rect.changeColor(GRAY_LIGHT)
+                act = Image(rect.x, rect.y, "./assets/image/active.png")
+                self.actives.append(act)
                 rect.isAttacked = True
                 i = 0
                 for ship in self.ships:
@@ -64,7 +75,11 @@ class Battle:
                         continue
 
                     if ship.checkAttack(pos):
-                        rect.changeColor(BLACK)
+                        # trung thuyen
+                        rect.changeColor(GRAY)
+                        act = Image(rect.x, rect.y,
+                                    "./assets/image/attack.png")
+                        self.actives.append(act)
                         if ship.checkDead():
                             ship.actDead()
                             i += 1

@@ -40,6 +40,7 @@ idCount = 0
 def threaded_client(conn: socket.socket, p, gameId):
     global idCount
     # ket noi
+
     conn.send(str.encode(str(p)))
     #
 

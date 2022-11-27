@@ -1,5 +1,6 @@
 from utils import *
 from .rect import Rect
+from .image import Image
 # from .battle import Battle
 
 
@@ -16,19 +17,25 @@ class Ship:
         self.y = y
         self.direct: str = direct  # default: vertical , other value : horizon
         self.rects: list[Rect] = []
+        self.shipImage = None
         self.setup()
 
     def setup(self):
+        url = "./assets/image/ship{}.png"
+        self.shipImage = Image(self.x, self.y, url.format(self.length))
+
         if self.direct == "vertical":
             for i in range(self.length):
                 rect = Rect(self.x + i * (WEIGHT +
-                            LINE_WEIGHT), self.y, ORANGE, i)
+                            LINE_WEIGHT), self.y, WHITE, i)
                 self.rects.append(rect)
+            self.shipImage.rotate(0)
         else:
             for i in range(self.length):
                 rect = Rect(self.x, self.y + i *
-                            (WEIGHT + LINE_WEIGHT), ORANGE, i)
+                            (WEIGHT + LINE_WEIGHT), WHITE, i)
                 self.rects.append(rect)
+            self.shipImage.rotate(90)
 
     def changeDirection(self):
         if self.direct == "vertical":
@@ -41,27 +48,43 @@ class Ship:
                 self.rects[i].y = self.y
                 self.rects[i].x = self.x + i * (WEIGHT + LINE_WEIGHT)
                 self.rects[i].update()
+            self.shipImage.rotate(0)
         else:
             for i in range(self.length):
                 self.rects[i].y = self.y + i * (WEIGHT + LINE_WEIGHT)
                 self.rects[i].x = self.x
                 self.rects[i].update()
+            self.shipImage.rotate(90)
 
     def draw(self, win):
         for rect in self.rects:
             rect.draw(win)
+        self.shipImage.draw(win)
+
+    def setColorInMap(self):
+        for rect in self.rects:
+            rect.color = BLUE
 
     def changeColorActive(self):
-        for rect in self.rects:
-            if self.active == True:
-                self.battle.isClickShip = True
-                rect.color = RED
-            else:
-                rect.color = ORANGE
-                self.battle.isClickShip = False
+        if self.active == True:
+            self.battle.isClickShip = True
+            self.shipImage.setURL(
+                "./assets/image/ship{}-active.png".format(self.length))
+
+        else:
+            self.battle.isClickShip = False
+            self.shipImage.setURL(
+                "./assets/image/ship{}.png".format(self.length))
+
+        # for rect in self.rects:
+        #     if self.active == True:
+        #         self.battle.isClickShip = True
+        #         rect.color = ORANGE_ACTIVE
+        #     else:
+        #         rect.color = WHITE
+        #         self.battle.isClickShip = False
 
     def changeActive(self, pos):
-        print("changeActive")
         if self.isSet:
             return False
         if self.battle.isClickShip and self.active == False:
@@ -84,6 +107,7 @@ class Ship:
         y1 = pos[1] - self.y
         self.x = pos[0]
         self.y = pos[1]
+        self.shipImage.update(self.x, self.y)
 
         for rect in self.rects:
             rect.x = rect.x + x1
@@ -94,7 +118,7 @@ class Ship:
         for rect in self.rects:
             if rect.click(pos):
                 rect.isAttacked = True
-                rect.changeColor(BLACK)
+                rect.changeColor(GRAY)
                 return True
 
         return False
@@ -125,7 +149,11 @@ class Ship:
                         if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
                             index1 = convertPosToNum((xNum, yNum), SIZE)
                             self.battle.rects[index1].isAttacked = True
-                            self.battle.rects[index1].changeColor(RED)
+                            # self.battle.rects[index1].changeColor(GRAY_LIGHT)
+
+                            image = Image(
+                                self.battle.rects[index1].x, self.battle.rects[index1].y, "./assets/image/active.png")
+                            self.battle.actives.append(image)
 
         else:
             if y + self.length > SIZE:
@@ -142,7 +170,11 @@ class Ship:
                             index1 = convertPosToNum((xNum, yNum), SIZE)
                             # self.maps[player].rects[index1].isActive = True
                             self.battle.rects[index1].isAttacked = True
-                            self.battle.rects[index1].changeColor(RED)
+                            # self.battle.rects[index1].changeColor(GRAY_LIGHT)
+
+                            act = Image(
+                                self.battle.rects[index1].x, self.battle.rects[index1].y, "./assets/image/active.png")
+                            self.battle.actives.append(act)
 
     def isEnableSet(self):
         return self.active and not self.isSet

@@ -3,6 +3,9 @@ from network import Network
 from objects.button import Button
 from utils import *
 pygame.font.init()
+pygame.mixer.init()
+
+print(pygame.SRCALPHA)
 
 width = 700
 height = 700
@@ -16,9 +19,16 @@ user_text: str = ''
 text_box = pygame.Rect(100, 100, 140, 32)
 color = pygame.Color('lightskyblue3')
 
+background = pygame.image.load(
+    "./assets/image/background.png").convert()
+pygame.mixer.music.load("./assets/audio/soundBG.mp3")
+
+pygame.mixer.music.set_volume(0.2)
+
 
 def redrawWindow(win, game, p):
     win.fill((128, 128, 128))  # to mau nen background
+    win.blit(background, (0, 0))
 
     if not (game.connected()):
         font = pygame.font.SysFont("comicsans", 80)
@@ -28,19 +38,18 @@ def redrawWindow(win, game, p):
     else:
         # print(game.maps)
         # p : player : stt nguoi choi
-
         font = pygame.font.SysFont("comicsans", 40)
         if p == 0:
-            text = font.render("Your Move", 1, (0, 255, 255))
+            text = font.render("Your Move", 1, TEXT_COLOR)
             win.blit(text, (50, 80))
 
-            text = font.render("Opponents", 1, (0, 255, 255))
+            text = font.render("Opponents", 1, TEXT_COLOR)
             win.blit(text, (400, 80))
         else:
-            text = font.render("Opponents", 1, (0, 255, 255))
+            text = font.render("Opponents", 1, TEXT_COLOR)
             win.blit(text, (50, 80))
 
-            text = font.render("Your Move", 1, (0, 255, 255))
+            text = font.render("Your Move", 1, TEXT_COLOR)
             win.blit(text, (400, 80))
 
         # prepare game
@@ -65,21 +74,21 @@ def redrawWindow(win, game, p):
             btns.draw(win)
 
         #  start game
-        if game.getStatusGame() == 2:
-            turn = font.render("Turn : Your turn", 1, (255, 255, 255))
+        elif game.getStatusGame() == 2:
+            turn = font.render("Turn : Your turn", 1, BLACK)
 
             if p == 0:
                 if game.click == False:
-                    turn = font.render("Turn : Your turn", 1, (255, 255, 255))
+                    turn = font.render("Turn : Your turn", 1, BLACK)
                 else:
                     turn = font.render("Turn : Opponents' turn",
-                                       1, (255, 255, 255))
+                                       1, BLACK)
             else:
                 if game.click == True:
-                    turn = font.render("Turn : Your turn", 1, (255, 255, 255))
+                    turn = font.render("Turn : Your turn", 1, BLACK)
                 else:
                     turn = font.render("Turn : Opponents' turn",
-                                       1, (255, 255, 255))
+                                       1, BLACK)
 
             win.blit(turn, (20, 20))
 
@@ -131,6 +140,7 @@ def main():
         # khi ca 2 player chon
         if game.bothWent():
             redrawWindow(win, game, player)
+
             # try:
             #     game = n.send("reset")
             # except:
@@ -226,7 +236,7 @@ def menu_screen():
 
         pygame.display.update()
         clock.tick(60)
-
+    pygame.mixer.music.play(-1)
     main()
 
 
