@@ -2,10 +2,10 @@ import pygame
 from network import Network
 from objects.button import Button
 from utils import *
+
 pygame.font.init()
 pygame.mixer.init()
 
-print(pygame.SRCALPHA)
 
 width = 700
 height = 700
@@ -21,9 +21,10 @@ color = pygame.Color('lightskyblue3')
 
 background = pygame.image.load(
     "./assets/image/background.png").convert()
-pygame.mixer.music.load("./assets/audio/soundBG.mp3")
 
-pygame.mixer.music.set_volume(0.2)
+# pygame.mixer.music.load("./assets/audio/soundBG.mp3")
+# pygame.mixer.music.set_volume(0.2)
+net = Network()
 
 
 def redrawWindow(win, game, p):
@@ -114,15 +115,15 @@ btnPlay = Button("Play", 100, 500, (255, 0, 255))
 def main():
     run = True
     clock = pygame.time.Clock()
-    n = Network()
 
     if (user_text != ""):
-        data = n.startConnect(user_text, 0)
+        data = net.startConnect(user_text, 0)
         print(data)
     else:
         return
+
     try:
-        player = int(n.getP())
+        player = int(net.getP())
         print("You are player", player)
     except:
         quit()
@@ -131,7 +132,7 @@ def main():
         clock.tick(60)
         try:
             # lay du lieu game
-            game = n.send("get")
+            game = net.send("get")
         except:
             run = False
             print("Couldn't get game1")
@@ -142,7 +143,7 @@ def main():
             redrawWindow(win, game, player)
 
             # try:
-            #     game = n.send("reset")
+            #     game = net.send("reset")
             # except:
             #     run = False
             #     print("Couldn't get game2")
@@ -154,24 +155,24 @@ def main():
                         pos = pygame.mouse.get_pos()
                         if btns.click(pos):
                             try:
-                                n.send("ready")
+                                net.send("submit")
                             except pygame.error as e:
                                 run = False
                                 print(e)
                         else:
-                            n.send(make_pos(pos))
+                            net.send(make_pos(pos))
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_DOWN or event.key == pygame.K_w:
-                            n.send("changeDirection")
+                            net.send("changeDirection")
 
             elif game.getStatusGame() == 2:
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         pos = pygame.mouse.get_pos()
-                        n.send(make_pos(pos))
+                        net.send(make_pos(pos))
             elif game.getStatusGame() == 3:
                 # try:
-                #     game = n.send("reset")
+                #     game = net.send("reset")
                 # except:
                 #     run = False
                 #     print("Couldn't get game2")
@@ -182,7 +183,7 @@ def main():
                 if (game.winner() == 0 and player == 0) or (game.winner() == 1 and player == 1):
                     text = font.render("You won", 1, (255, 0, 0))
                 elif (game.winner() == -1):
-                    text = text = font.render("Tie game!", 1, (255, 0, 0))
+                    text = font.render("Tie game!", 1, (255, 0, 0))
                 else:
                     text = font.render("You lost ...", 1, (255, 0, 0))
                 win.blit(text, (width / 2 - text.get_width() /
@@ -236,7 +237,7 @@ def menu_screen():
 
         pygame.display.update()
         clock.tick(60)
-    pygame.mixer.music.play(-1)
+    # pygame.mixer.music.play(-1)
     main()
 
 

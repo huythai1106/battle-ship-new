@@ -39,8 +39,8 @@ class Battle:
         else:
             x -= 300
 
-        ship = Ship(3, "vertical", self.game, x, self.y + 200, self)
-        ship1 = Ship(2, "vertical", self.game, x, self.y + 100, self)
+        ship = Ship(3, "vertical", self.game, x, self.y + 200, self, 0)
+        ship1 = Ship(2, "vertical", self.game, x, self.y + 100, self, 1)
 
         self.ships.append(ship)
         self.ships.append(ship1)

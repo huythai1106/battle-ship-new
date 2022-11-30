@@ -11,12 +11,16 @@ class Network:
         # self.p = self.connect()
 
     def getP(self):
+        # lay thong tin nguoi choi (0 or 1)
         return self.connect()
 
     def startConnect(self, data: str, type: int):
         try:
             # print(data)
             self.client.connect(self.addr)
+
+            # type == 0 : thong bao choi game
+            # data : password
 
             type = int.to_bytes(type, 4, "little")
             pk_send = type + str.encode(data)

@@ -5,13 +5,14 @@ from .image import Image
 
 
 class Ship:
-    def __init__(self, length, direct, game, x, y, battle) -> None:
+    def __init__(self, length, direct, game, x, y, battle, index) -> None:
         self.active = False
         self.isSet = False
         self.isDead = False
         self.length = length
         self.game = game
         self.battle = battle
+        self.index = index
         self.setIndex: int = None
         self.x = x
         self.y = y

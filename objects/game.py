@@ -47,7 +47,7 @@ class Game:
         # self.moves[player] = move
         # self.maps[player] = Map()
         if self.getStatusGame() == 1:
-            if data == "ready":
+            if data == "submit":
                 if self.maps[player].isSetAllShip():
                     if (player == 0):
                         self.p1Ready = True
@@ -142,4 +142,7 @@ class Game:
         self.p2Went = False
 
     def resetGame(self):
+        pass
+
+    def draw(self, win):
         pass
