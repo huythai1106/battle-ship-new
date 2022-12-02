@@ -109,7 +109,7 @@ def redrawWindow(win: pygame.Surface, game: Game):
                  2, height / 2 - text_render.get_height() / 2))
 
 
-def threaded_webServer(conn: socket.socket, game: Game):
+def threaded_webServer(conn: socket.socket, game: Game, gameID):
     global win
     pygame.font.init()
 
@@ -131,20 +131,20 @@ def threaded_webServer(conn: socket.socket, game: Game):
             redrawWindow(win, game)
             pygame.time.delay(3000)
             run = False
+        pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print(123)
-                run = False
                 win = None
                 pygame.quit()
-        pygame.display.update()
+                run = False
 
     try:
-        del games[gameId]
+        del games[gameID]
     except:
         pass
     win = None
+    print("Closing game in server: ", gameId)
     conn.close()
 
 
@@ -160,6 +160,8 @@ def threaded_client(conn: socket.socket, p, gameId):
             data = conn.recv(2048).decode()
             if gameId in games:
                 game = games[gameId]["game"]
+                if not game:
+                    break
                 if p == 0:
                     game.p1Went = True
                 else:
@@ -196,7 +198,6 @@ while True:
     print("Connected to: ", addr)
 
     type = decodeByte(conn.recv(4))
-    print(type)
 
     if type == 1:
 
@@ -206,7 +207,6 @@ while True:
         # uid2 = decodeByte(conn.recv(4))
         # lengthKey = decodeByte(conn.recv(4))
         if win == None:
-            print(1)
             gameId = str(''.join(random.choices(
                 string.ascii_uppercase + string.digits, k=3)))  # thay keypassword
             games[gameId] = {
@@ -221,15 +221,14 @@ while True:
                 "success creat new game with ID: " + str(gameId)))
             # conn.close()
 
-            start_new_thread(threaded_webServer, (conn, games[gameId]["game"]))
+            start_new_thread(threaded_webServer,
+                             (conn, games[gameId]["game"], gameId))
         else:
-            print(1)
             conn.send(str.encode("Game exsit!"))
             conn.close()
     else:
         idCount += 1
         data = conn.recv(2048).decode()
-        print(data)
         if data in games:
             # game, p = games[data]
             games[data]["countP"] += 1

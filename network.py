@@ -43,7 +43,6 @@ class Network:
     def connect(self):
         try:
             a = self.client.recv(2048).decode()
-            print(a)
             return a
         except:
             pass
