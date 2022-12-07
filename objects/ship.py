@@ -139,10 +139,29 @@ class Ship:
         return False
 
     def checkAttackIndex(self, index):
+
         if self.direct == "vertical":
-            pass
-        elif self.direct == "horizon":
-            pass
+            if index % SIZE != self.setIndex % SIZE:
+                return False
+            print(index, self.setIndex, self.length)
+            a = index // SIZE
+            b = self.setIndex // SIZE
+            c = b + self.length - 1
+            print(a, b, c)
+            if b <= a <= c:
+                index1 = a - b
+                print(index1, "123213")
+                self.rects[index1].isAttacked = True
+                self.rects[index1].changeColor(GRAY)
+                return True
+        else:
+            if self.setIndex <= index and index < self.setIndex + self.length:
+                index1 = index - self.setIndex
+                print(index1, "2131edasd")
+                self.rects[index1].isAttacked = True
+                self.rects[index1].changeColor(GRAY)
+                return True
+        return False
 
     def checkDead(self):
         for rect in self.rects:

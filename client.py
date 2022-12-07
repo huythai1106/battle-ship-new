@@ -3,6 +3,8 @@ from network import Network
 from objects.button import Button
 from utils import *
 from objects.game import Game
+import random
+import time
 
 pygame.font.init()
 pygame.mixer.init()
@@ -204,7 +206,7 @@ def main():
 
 
 def randomIndex():
-    return 0
+    return random.randint(0, 99)
 
 
 def playGameAI(game: Game, net: Network, player):
@@ -217,7 +219,54 @@ def playGameAI(game: Game, net: Network, player):
     # if player == 1:
     #     while True:
     #         pass
-    print("play game")
+    if player == 0:
+        net.pkt_send(10, str(10))
+        game.maps[player].gainAttackIndex(10)
+    indexAttacked = 0
+
+    # type, data = net.pkt_recv()
+
+    # if type == 0:
+    #     print(data)
+    # if type == 11:
+    #     print(data)
+    # if type == 12:
+    #     net.pkt_send(10, str(0))
+
+    while True:
+        if game.getStatusGame() == 3:
+            print("finish game")
+            break
+
+        type, data = net.pkt_recv()
+        print(type)
+        if type == 0:
+            print(data)
+            if (player == 0 and game.click == False) or (player == 1 and game.click == True):
+                indexAttacked = randomIndex()
+                net.pkt_send(10, str(indexAttacked))
+
+        elif type == 11:
+            print(data)
+            time.sleep(2)
+
+            game.maps[player].gainAttackIndex(indexAttacked)
+            game.click = not game.click
+            if (player == 0 and game.click == False) or (player == 1 and game.click == True):
+                indexAttacked = randomIndex()
+                net.pkt_send(10, str(indexAttacked))
+
+        elif type == 12:
+            time.sleep(2)
+            game.maps[player].gainAttackIndex(indexAttacked)
+
+            if (player == 0 and game.click == False) or (player == 1 and game.click == True):
+                indexAttacked = randomIndex()
+                net.pkt_send(10, str(indexAttacked))
+
+        else:
+            break
+        print(indexAttacked)
 
 
 def mainD():
@@ -345,7 +394,6 @@ def mainD():
                 run = False
                 pygame.quit()
 
-    print("choi game")
     playGameAI(game, net, player)
     #
     quit()

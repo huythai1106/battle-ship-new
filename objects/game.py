@@ -100,32 +100,30 @@ class Game:
             if isSet == False:
                 pkt_send(conn, 0, "loi")
 
-        elif type == 11:
+        elif type == 10:
             data = int(data)
-            if not (player == 0 and self.click == False):
-                pkt_send(conn, 0, "ko den luot")
-
-            if not (player == 1 and self.click == True):
-                pkt_send(conn, 0, "ko den luot")
-
-            if player == 0 and self.click == False:
-                # ban thanh cong va ban truot
-                if self.maps[1].gainAttackIndex(index) == 1:
+            if player == 0:
+                if self.click == True:
+                    pkt_send(conn, 0, "ko den luot 1")
+                elif self.maps[1].gainAttackIndex(data) == 1:
                     self.click = True
                     pkt_send(conn, 11, "MISS")
                     pkt_send(conn2, 11, "MISS")
                 # ban thanh cong va ban trung
-                elif self.maps[1].gainAttackIndex(index) == 2:
+                elif self.maps[1].gainAttackIndex(data) == 2:
                     pkt_send(conn, 12, "HIT")
                     pkt_send(conn2, 12, "HIT")
                 else:
                     pkt_send(conn, 0, "LOI BAN")
-            if player == 1 and self.click == True:
-                if self.maps[0].gainAttackIndex(index) == 1:
+
+            if player == 1:
+                if self.click == False:
+                    pkt_send(conn, 0, "ko den luot 2")
+                elif self.maps[0].gainAttackIndex(data) == 1:
                     self.click = False
                     pkt_send(conn, 11, "MISS")
                     pkt_send(conn2, 11, "MISS")
-                elif self.maps[0].gainAttackIndex(index) == 2:
+                elif self.maps[0].gainAttackIndex(data) == 2:
                     pkt_send(conn, 12, "HIT")
                     pkt_send(conn2, 12, "HIT")
                 else:

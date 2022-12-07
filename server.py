@@ -168,10 +168,15 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
         win.fill((128, 128, 128))  # to mau nen background
         win.blit(background, (0, 0))
         redrawWindow(win, game)
-        # if game.getStatusGame() == 3:
-        #     redrawWindow(win, game)
-        #     pygame.time.delay(3000)
-        #     run = False
+        if game.getStatusGame() == 3:
+            # redrawWindow(win, game)
+            # pygame.time.delay(3000)
+            # run = False
+
+            # gui goi tin ket thuc len web server
+            print("finish game")
+            break
+
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -187,6 +192,10 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
     win = None
     print("Closing game in server: ", gameId)
     conn.close()
+
+
+def threaded_client_handleSend(game: Game, p, data, type, conn, conn2):
+    game.play(p, data, type, conn, conn2)
 
 
 def threaded_client(conn: socket.socket, p, gameId):
@@ -250,8 +259,20 @@ def threaded_client(conn: socket.socket, p, gameId):
                         print("1321213")
                         playGame = True
                         pkt_send(conn, 9, "play game")
-                    break
+                        continue
 
+                    print("1111: ", p)
+                    type, data = pkt_recv(conn)
+                    print(type, data, p)
+
+                    if p == 0:
+                        conn2 = games[gameId]["conns"][1]
+                    else:
+                        conn2 = games[gameId]["conns"][0]
+                    start_new_thread(threaded_client_handleSend,
+                                     (game, p, data, type, conn, conn2))
+                elif game.getStatusGame() == 3:
+                    break
                     # type, data = pkt_recv(conn)
                     # print(type, data)
 
@@ -286,7 +307,7 @@ while True:
         # lengthKey = decodeByte(conn.recv(4))
         if win == None:
             gameId = str(''.join(random.choices(
-                string.ascii_uppercase + string.digits, k=3)))  # thay keypassword
+                string.ascii_uppercase + string.digits, k=1)))  # thay keypassword
             games[gameId] = {
                 "game": Game(gameId),
                 "countP": 0,

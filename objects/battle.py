@@ -91,12 +91,10 @@ class Battle:
 
         return 0
 
-    def gainAttackIndex(self, index) :
+    def gainAttackIndex(self, index):
         rect = self.rects[index]
-        if not rect : 
-            return 0
 
-        if not rect.isAttacked :
+        if not rect.isAttacked:
             rect.changeColor(GRAY_LIGHT)
             act = Image(rect.x, rect.y, "./assets/image/active.png")
             self.actives.append(act)
@@ -118,8 +116,9 @@ class Battle:
                         if self.checkResultBattle():
                             self.game.finish = True
                     return 2
-
             return 1
+
+        return 0
 
     def isClickMaps(self, pos):
         for rect in self.rects:
