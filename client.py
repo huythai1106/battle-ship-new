@@ -2,6 +2,7 @@ import pygame
 from network import Network
 from objects.button import Button
 from utils import *
+from objects.game import Game
 
 pygame.font.init()
 pygame.mixer.init()
@@ -25,6 +26,7 @@ background = pygame.image.load(
 # pygame.mixer.music.load("./assets/audio/soundBG.mp3")
 # pygame.mixer.music.set_volume(0.2)
 net = Network()
+game = None
 
 
 def redrawWindow(win, game, p):
@@ -201,6 +203,154 @@ def main():
         redrawWindow(win, game, player)
 
 
+def randomIndex():
+    return 0
+
+
+def playGameAI(game: Game, net: Network, player):
+    # if player == 0:
+    #     index = randomIndex()
+    #     net.pkt_send(10, str(index))
+
+    #     while True:
+    #         pass
+    # if player == 1:
+    #     while True:
+    #         pass
+    print("play game")
+
+
+def mainD():
+    run = True
+    clock = pygame.time.Clock()
+
+    # firstAttack = False
+    type = None
+    data = None
+
+    if (user_text != ""):
+        data = net.startConnect(user_text, 2)
+        print(data)
+    else:
+        print("coundn't get game")
+        return
+
+    try:
+        player = int(net.getP())
+        print("You are player", player)
+        game = Game(user_text)
+        redrawWindow(win, game, player)
+        pygame.display.update()
+        game.ready = True
+    except:
+        quit()
+
+    type, data = net.pkt_recv()
+
+    if type == 4:
+        print(data)
+        game.p1Went = True
+        game.p2Went = True
+    else:
+        return
+
+    print(game.getStatusGame())
+    while run:
+        clock.tick(60)
+        redrawWindow(win, game, player)
+        pygame.display.update()
+
+        if game.getStatusGame() == 1:
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    if btns.click(pos):
+                        try:
+                            net.pkt_send(8, "submit")
+                            # start game 2
+                            type, data = net.pkt_recv()
+
+                            if type == 0:
+                                print(data)
+                            else:
+                                type, data = net.pkt_recv()
+                                if type == 9:
+                                    print(data)
+                                    game.p1Ready = True
+                                    game.p2Ready = True
+
+                        except pygame.error as e:
+                            run = False
+                            print(e)
+                    else:
+                        for ship in game.maps[player].ships:
+                            for rect in ship.rects:
+                                if rect.click(pos):
+                                    print(ship.index)
+                                    net.pkt_send(5, str(ship.index))
+                                    type, data = net.pkt_recv()
+                                    if type == 0:
+                                        # xu ly code
+                                        print(data)
+                                    else:
+                                        for ship in game.maps[player].ships:
+                                            if ship.changeActive(pos):
+                                                print("active")
+
+                        for rect in game.maps[player].rects:
+                            if rect.click(pos):
+                                net.pkt_send(7, str(rect.index))
+                                type, data = net.pkt_recv()
+                                if type == 0:
+                                    print(data)
+                                else:
+                                    # xu ly code
+                                    for rect in game.maps[player].rects:
+                                        if rect.isActive == False and rect.click(pos):
+                                            x = rect.x
+                                            y = rect.y
+                                            index = rect.index
+                                            for ship in game.maps[player].ships:
+                                                if ship.isEnableSet() and game.checkIsSet(index, ship.length, ship.direct, player):
+                                                    ship.changePos((x, y))
+                                                    ship.isSet = True
+                                                    ship.active = False
+                                                    ship.setIndex = index
+                                                    ship.changeColorActive()
+                                                    # self.maps[player].isClickShip = False
+                                                    ship.setColorInMap()
+
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN or event.key == pygame.K_w:
+                        net.pkt_send(6, "changDirection")
+                        type, data = net.pkt_recv()
+                        if type == 0:
+                            print(data)
+                        else:
+                            # xu ly code
+                            for ship in game.maps[player].ships:
+                                if ship.active:
+                                    ship.changeDirection()
+
+        elif game.getStatusGame() == 2:
+            # if player == 1 and firstAttack == False:
+            #     type, data = net.pkt_recv()
+            # for event in pygame.event.get():
+            #     if event.type == pygame.MOUSEBUTTONDOWN:
+            #         pos = pygame.mouse.get_pos()
+            break
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+
+    print("choi game")
+    playGameAI(game, net, player)
+    #
+    quit()
+
+
 def menu_screen():
     global user_text
 
@@ -238,7 +388,7 @@ def menu_screen():
         pygame.display.update()
         clock.tick(60)
     # pygame.mixer.music.play(-1)
-    main()
+    mainD()
 
 
 # main()

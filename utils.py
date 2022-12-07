@@ -31,6 +31,20 @@ def decodeByte(msg):
     return int.from_bytes(msg, 'little')
 
 
+def pkt_send(conn, type, data):
+    type = int.to_bytes(type, 4, "little")
+    len1 = int.to_bytes(str(data).__len__(), 4, "little")
+    pk_send = type + len1 + str.encode(data)
+    conn.send(pk_send)
+
+
+def pkt_recv(conn):
+    type = decodeByte(conn.recv(4))
+    len = decodeByte(conn.recv(4))
+    data = conn.recv(len).decode()
+    return (type, data)
+
+
 ORANGE = (225, 93, 14)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)

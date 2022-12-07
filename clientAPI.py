@@ -1,5 +1,6 @@
 from utils import *
 from network import Network
+from objects.game import Game
 
 
 class Client:
@@ -13,6 +14,10 @@ class Client:
     def connect(self, data):
         recv = self.net.startConnect(data, 0)
         print(recv)
+        if recv:
+            self.game = Game(123)
+        else:
+            pass
 
     def getP(self):
         try:
@@ -21,9 +26,6 @@ class Client:
         except:
             print("loi game")
             quit()
-
-    def getGame(self):
-        return self.net.send("get")
 
     def getStatusGame(self):
         return self.game.getStatusGame()
@@ -39,6 +41,3 @@ class Client:
     def setPosShip(self, pos):
         if self.getStatusGame() == 1:
             self.net.send(make_pos(pos))
-
-    def drawGame(self, win):
-        pass

@@ -103,6 +103,20 @@ class Ship:
 
         return False
 
+    def changeActiveIndex(self):
+        if self.isSet:
+            return False
+        if self.battle.isClickShip and self.active == False:
+            return False
+
+        self.active = not self.active
+        self.changeColorActive()
+        if self.active == True:
+            self.isSet = False
+        else:
+            self.battle.isClickShip = False
+        return True
+
     def changePos(self, pos):
         x1 = pos[0] - self.x
         y1 = pos[1] - self.y
@@ -123,6 +137,12 @@ class Ship:
                 return True
 
         return False
+
+    def checkAttackIndex(self, index):
+        if self.direct == "vertical":
+            pass
+        elif self.direct == "horizon":
+            pass
 
     def checkDead(self):
         for rect in self.rects:

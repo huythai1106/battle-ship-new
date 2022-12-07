@@ -1,12 +1,13 @@
 import socket
 import pickle
+from utils import *
 
 
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "127.0.0.1"
-        self.port = 5556
+        self.server = "0.tcp.ap.ngrok.io"
+        self.port = 18323
         self.addr = (self.server, self.port)
         # self.p = self.connect()
 
@@ -23,28 +24,21 @@ class Network:
             # data : password
 
             type = int.to_bytes(type, 4, "little")
-            pk_send = type + str.encode(data)
+            len1 = int.to_bytes(len(data), 4, "little")
+            pk_send = type + len1 + str.encode(data)
             self.client.send(pk_send)
-            data1 = self.client.recv(2048).decode()
-            return data1
+
+            return self.pkt_recv()
         except socket.error as e:
             print(e)
 
-    # def startConnect(self, data: str):
-    #     try:
-    #         # print(data)
-    #         self.client.connect(self.addr)
-    #         self.client.send(str.encode(data))
-    #         data1 = self.client.recv(2048).decode()
-    #         return data1
-    #     except socket.error as e:
-    #         print(e)
-
     def connect(self):
         try:
-            a = self.client.recv(2048).decode()
-            return a
+            type, p = self.pkt_recv()
+            print(type, p)
+            return p
         except:
+            print("loi")
             pass
 
     def send(self, data: str):
@@ -55,3 +49,15 @@ class Network:
             return data1
         except socket.error as e:
             print(e)
+
+    def pkt_send(self, type, data):
+        type = int.to_bytes(type, 4, "little")
+        len1 = int.to_bytes(len(str(data)), 4, "little")
+        pk_send = type + len1 + str.encode(data)
+        self.client.send(pk_send)
+
+    def pkt_recv(self):
+        type = decodeByte(self.client.recv(4))
+        len = decodeByte(self.client.recv(4))
+        data = self.client.recv(len).decode()
+        return (type, data)

@@ -91,6 +91,36 @@ class Battle:
 
         return 0
 
+    def gainAttackIndex(self, index) :
+        rect = self.rects[index]
+        if not rect : 
+            return 0
+
+        if not rect.isAttacked :
+            rect.changeColor(GRAY_LIGHT)
+            act = Image(rect.x, rect.y, "./assets/image/active.png")
+            self.actives.append(act)
+            rect.isAttacked = True
+            i = 0
+            for ship in self.ships:
+                if ship.checkDead():
+                    continue
+
+                if ship.checkAttackIndex(index):
+                    # trung thuyen
+                    rect.changeColor(GRAY)
+                    act = Image(rect.x, rect.y,
+                                "./assets/image/attack.png")
+                    self.actives.append(act)
+                    if ship.checkDead():
+                        ship.actDead()
+                        i += 1
+                        if self.checkResultBattle():
+                            self.game.finish = True
+                    return 2
+
+            return 1
+
     def isClickMaps(self, pos):
         for rect in self.rects:
             if rect.click(pos):

@@ -47,9 +47,76 @@ games = {}
 idCount = 0
 
 
-def redrawWindow(win: pygame.Surface, game: Game):
+# def redrawWindow(win: pygame.Surface, game: Game):
+#     if game.getStatusGame() == 1:
+#         font = pygame.font.SysFont("comicsans", 40)
 
-    if game.getStatusGame() == 1:
+#         text = font.render("Player 1", 1, TEXT_COLOR)
+#         win.blit(text, (50, 80))
+
+#         text = font.render("Player 2", 1, TEXT_COLOR)
+#         win.blit(text, (400, 80))
+
+#         text1 = "set up"
+#         text2 = "set up"
+
+#         if game.p1Ready:
+#             text1 = "Lock In"
+#         if game.p2Ready:
+#             text2 = "Lock In"
+
+#         text1Render = font.render(text1, 1, (255, 0, 0, True))
+#         text2Render = font.render(text2, 1, (255, 0, 0, True))
+
+#         win.blit(text1Render, (50, 530))
+#         win.blit(text2Render, (400, 530))
+
+#     elif game.getStatusGame() == 2:
+#         font = pygame.font.SysFont("comicsans", 40)
+
+#         text = font.render("Player 1", 1, TEXT_COLOR)
+#         win.blit(text, (50, 80))
+
+#         text = font.render("Player 2", 1, TEXT_COLOR)
+
+#         win.blit(text, (400, 80))
+#         for map in game.maps:
+#             for rect in map.rects:
+#                 rect.draw(win)
+#             for ship in map.ships:
+#                 ship.draw(win)
+#             for rectActive in map.actives:
+#                 rectActive.draw(win)
+
+#     elif game.getStatusGame() == 3:
+#         font = pygame.font.SysFont("comicsans", 90)
+#         if (game.winner() == 0):
+#             text = font.render("Player 1 won", 1, (255, 0, 0))
+#         elif (game.winner() == 1):
+#             text = font.render("Player 1 won", 1, (255, 0, 0))
+#         else:
+#             text = font.render("Tie game!", 1, (255, 0, 0))
+
+#         win.blit(text, (width / 2 - text.get_width() /
+#                         2, height / 2 - text.get_height() / 2))
+#     else:
+#         text = "waiting for 2 player"
+#         font = pygame.font.Font(None, 32)
+
+#         text_render = font.render(text, 1, (0, 0, 0))
+#         win.blit(text_render, (width / 2 - text_render.get_width() /
+#                  2, height / 2 - text_render.get_height() / 2))
+
+
+def redrawWindow(win: pygame.Surface, game: Game):
+    if game.getStatusGame == 0:
+        text = "waiting for 2 player"
+        font = pygame.font.Font(None, 32)
+
+        text_render = font.render(text, 1, (0, 0, 0))
+        win.blit(text_render, (width / 2 - text_render.get_width() /
+                 2, height / 2 - text_render.get_height() / 2))
+    else:
         font = pygame.font.SysFont("comicsans", 40)
 
         text = font.render("Player 1", 1, TEXT_COLOR)
@@ -72,15 +139,8 @@ def redrawWindow(win: pygame.Surface, game: Game):
         win.blit(text1Render, (50, 530))
         win.blit(text2Render, (400, 530))
 
-    elif game.getStatusGame() == 2:
-        font = pygame.font.SysFont("comicsans", 40)
-
-        text = font.render("Player 1", 1, TEXT_COLOR)
-        win.blit(text, (50, 80))
-
-        text = font.render("Player 2", 1, TEXT_COLOR)
-
         win.blit(text, (400, 80))
+
         for map in game.maps:
             for rect in map.rects:
                 rect.draw(win)
@@ -88,25 +148,6 @@ def redrawWindow(win: pygame.Surface, game: Game):
                 ship.draw(win)
             for rectActive in map.actives:
                 rectActive.draw(win)
-
-    elif game.getStatusGame() == 3:
-        font = pygame.font.SysFont("comicsans", 90)
-        if (game.winner() == 0):
-            text = font.render("Player 1 won", 1, (255, 0, 0))
-        elif (game.winner() == 1):
-            text = font.render("Player 1 won", 1, (255, 0, 0))
-        else:
-            text = font.render("Tie game!", 1, (255, 0, 0))
-
-        win.blit(text, (width / 2 - text.get_width() /
-                        2, height / 2 - text.get_height() / 2))
-    else:
-        text = "waiting for 2 player"
-        font = pygame.font.Font(None, 32)
-
-        text_render = font.render(text, 1, (0, 0, 0))
-        win.blit(text_render, (width / 2 - text_render.get_width() /
-                 2, height / 2 - text_render.get_height() / 2))
 
 
 def threaded_webServer(conn: socket.socket, game: Game, gameID):
@@ -127,10 +168,10 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
         win.fill((128, 128, 128))  # to mau nen background
         win.blit(background, (0, 0))
         redrawWindow(win, game)
-        if game.getStatusGame() == 3:
-            redrawWindow(win, game)
-            pygame.time.delay(3000)
-            run = False
+        # if game.getStatusGame() == 3:
+        #     redrawWindow(win, game)
+        #     pygame.time.delay(3000)
+        #     run = False
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -152,34 +193,71 @@ def threaded_client(conn: socket.socket, p, gameId):
     global idCount
     # ket noi
 
-    conn.send(str.encode(str(p)))
+    # conn.send(str.encode(str(p)))
+    pkt_send(conn, 1, str(p))
     #
 
-    while True:
-        try:
-            data = conn.recv(2048).decode()
-            if gameId in games:
-                game = games[gameId]["game"]
-                if not game:
-                    break
-                if p == 0:
-                    game.p1Went = True
-                else:
-                    game.p2Went = True
+    startGame = False
+    readyGame = False
+    playGame = False
 
-                if not data:
+    while True:
+        # data = conn.recv(2048).decode()
+        if gameId in games:
+            game: Game = games[gameId]["game"]
+            if not game:
+                break
+            if p == 0:
+                game.p1Went = True
+            else:
+                game.p2Went = True
+
+            if game.bothWent() and not startGame:
+                print(1)
+                pkt_send(conn, 4, "starting game")
+                startGame = True
+
+            elif startGame:
+                if game.getStatusGame() == 1:
+
+                    if readyGame:
+                        continue
+                        # pkt_send(conn, 0, "loi goi tin")
+
+                    type, data = pkt_recv(conn)
+                    print(type, data)
+
+                    if type == 8:  # submit game
+                        if game.maps[p].isSetAllShip():
+                            if p == 0:
+                                game.p1Ready = True
+                            else:
+                                game.p2Ready = True
+                            readyGame = True
+                            pkt_send(conn, 100, "ready game")
+                        else:
+                            pkt_send(conn, 0, "chua dat xong game")
+                    else:
+                        conn2 = None
+                        if p == 0:
+                            conn2 = games[gameId]["conns"][1]
+                        else:
+                            conn2 = games[gameId]["conns"][0]
+
+                        game.play(p, data, type, conn, conn2)
+                elif game.getStatusGame() == 2:
+                    if playGame == False:
+                        print("1321213")
+                        playGame = True
+                        pkt_send(conn, 9, "play game")
                     break
-                else:
-                    if data == "reset":
-                        game.resetWent()
-                    elif data != "get":
-                        game.play(p, data)
+
+                    # type, data = pkt_recv(conn)
+                    # print(type, data)
 
                     # reply = game
-                    conn.sendall(pickle.dumps(game))
-            else:
-                break
-        except:
+                    # conn.sendall(pickle.dumps(game))
+        else:
             break
 
     print("Lost connection")
@@ -214,11 +292,13 @@ while True:
                 "countP": 0,
                 # "u1Id" : uid1,
                 # "u1Id" : uid2  // tam thoi chua co
+                "conns": []
             }
 
             #  [Game(gameId), 0]
             conn.send(str.encode(
                 "success creat new game with ID: " + str(gameId)))
+            # conn.send(1)
             # conn.close()
 
             start_new_thread(threaded_webServer,
@@ -226,23 +306,26 @@ while True:
         else:
             conn.send(str.encode("Game exsit!"))
             conn.close()
-    else:
+    elif type == 2:
         idCount += 1
-        data = conn.recv(2048).decode()
+        len = decodeByte(conn.recv(4))
+        data = conn.recv(len).decode()  # password
         if data in games:
             # game, p = games[data]
             games[data]["countP"] += 1
             if games[data]["countP"] == 1:
-                conn.send(str.encode("ok"))
+                pkt_send(conn, 3, "waiting for player")
+                games[data]["conns"].append(conn)
                 start_new_thread(
                     threaded_client, (conn, games[data]["countP"] - 1, data))
             elif games[data]["countP"] == 2:
-                conn.send(str.encode("ok"))
+                pkt_send(conn, 3, "waiting for player")
+                games[data]["conns"].append(conn)
                 games[data]["game"].ready = True
                 start_new_thread(
                     threaded_client, (conn, games[data]["countP"] - 1, data))
             else:
-                conn.send(str.encode("Room full"))
+                pkt_send(conn, 0, "Room full")
                 games[data]["countP"] -= 1
                 conn.close()
                 idCount -= 1
@@ -250,8 +333,9 @@ while True:
             conn.send(str.encode("Not found ID game"))
             conn.close()
             idCount -= 1
-
-    print(games)
+    else:
+        pkt_send(conn, 0, "Coundn't get game")
+        conn.close()
 
     # p = 0
     # gameId = (idCount - 1) // 2

@@ -43,53 +43,140 @@ class Game:
 
         return self.status
 
-    def play(self, player, data):
+    def play(self, player, data, type, conn, conn2):
         # self.moves[player] = move
         # self.maps[player] = Map()
-        if self.getStatusGame() == 1:
-            if data == "submit":
-                if self.maps[player].isSetAllShip():
-                    if (player == 0):
-                        self.p1Ready = True
-                    else:
-                        self.p2Ready = True
-                # self.maps[player].isSetting = False
-            elif data == "changeDirection":
-                for ship in self.maps[player].ships:
-                    if ship.active:
-                        ship.changeDirection()
+        print(type, data)
+        if type == 5:  # active ship
+            data = int(data)
+            if self.getStatusGame() != 1:
+                pkt_send(conn, 0, "loi")
+                return
+
+            if self.maps[player].ships[data].changeActiveIndex():
+                pkt_send(conn, 100, "ok")
             else:
-                pos = read_pos(data)
-                for ship in self.maps[player].ships:
-                    if ship.changeActive(pos):
-                        print("active")
+                pkt_send(conn, 0, "da co thuyen dc chon")
+        elif type == 6:  # changeDirection
+            if self.getStatusGame() != 1:
+                pkt_send(conn, 0, "loi")
+                return
 
-                # set Ship in map
-                for rect in self.maps[player].rects:
-                    if rect.isActive == False and rect.click(pos):
-                        x = rect.x
-                        y = rect.y
-                        index = rect.index
-                        for ship in self.maps[player].ships:
-                            if ship.isEnableSet() and self.checkIsSet(index, ship.length, ship.direct, player):
-                                ship.changePos((x, y))
-                                ship.isSet = True
-                                ship.active = False
-                                ship.setIndex = index
-                                ship.changeColorActive()
-                                # self.maps[player].isClickShip = False
-                                ship.setColorInMap()
+            for ship in self.maps[player].ships:
+                if ship.active:
+                    ship.changeDirection()
+                    pkt_send(conn, 100, "ok")
+                    return
 
-                                # set rect active in map
+            pkt_send(conn, 0, "chua co thuyen duoc chon")
 
-        elif self.getStatusGame() == 2:
-            pos = read_pos(data)
+        elif type == 7:
+            index = int(data)
+            isSet = False
+            if self.getStatusGame() != 1:
+                pkt_send(conn, 0, "loi")
+                return
+
+            rect = self.maps[player].rects[index]
+            if not (rect.isActive == False):
+                pkt_send(conn, 0, "loi")
+                return
+
+            x = self.maps[player].rects[index].x
+            y = self.maps[player].rects[index].y
+
+            for ship in self.maps[player].ships:
+                if ship.isEnableSet() and self.checkIsSet(index, ship.length, ship.direct, player):
+                    ship.changePos((x, y))
+                    ship.isSet = True
+                    ship.active = False
+                    ship.setIndex = index
+                    ship.changeColorActive()
+                    # self.maps[player].isClickShip = False
+                    ship.setColorInMap()
+                    pkt_send(conn, 100, "ok")
+                    isSet = True
+
+            if isSet == False:
+                pkt_send(conn, 0, "loi")
+
+        elif type == 11:
+            data = int(data)
+            if not (player == 0 and self.click == False):
+                pkt_send(conn, 0, "ko den luot")
+
+            if not (player == 1 and self.click == True):
+                pkt_send(conn, 0, "ko den luot")
+
             if player == 0 and self.click == False:
-                if self.maps[1].gainAttack(pos) == 1:
+                # ban thanh cong va ban truot
+                if self.maps[1].gainAttackIndex(index) == 1:
                     self.click = True
+                    pkt_send(conn, 11, "MISS")
+                    pkt_send(conn2, 11, "MISS")
+                # ban thanh cong va ban trung
+                elif self.maps[1].gainAttackIndex(index) == 2:
+                    pkt_send(conn, 12, "HIT")
+                    pkt_send(conn2, 12, "HIT")
+                else:
+                    pkt_send(conn, 0, "LOI BAN")
             if player == 1 and self.click == True:
-                if self.maps[0].gainAttack(pos) == 1:
+                if self.maps[0].gainAttackIndex(index) == 1:
                     self.click = False
+                    pkt_send(conn, 11, "MISS")
+                    pkt_send(conn2, 11, "MISS")
+                elif self.maps[0].gainAttackIndex(index) == 2:
+                    pkt_send(conn, 12, "HIT")
+                    pkt_send(conn2, 12, "HIT")
+                else:
+                    pkt_send(conn, 0, "LOI BAN")
+        else:
+            pkt_send(conn, 0, "loi ko xac dinh")
+
+        # if self.getStatusGame() == 1:
+        #     if data == "submit":
+        #         if self.maps[player].isSetAllShip():
+        #             if (player == 0):
+        #                 self.p1Ready = True
+        #             else:
+        #                 self.p2Ready = True
+        #         # self.maps[player].isSetting = False
+        #     elif data == "changeDirection":
+        #         for ship in self.maps[player].ships:
+        #             if ship.active:
+        #                 ship.changeDirection()
+        #     else:
+        #         pos = read_pos(data)
+        #         for ship in self.maps[player].ships:
+        #             if ship.changeActive(pos):
+        #                 print("active")
+
+        #         # set Ship in map
+        #         for rect in self.maps[player].rects:
+        #             if rect.isActive == False and rect.click(pos):
+        #                 x = rect.x
+        #                 y = rect.y
+        #                 index = rect.index
+        #                 for ship in self.maps[player].ships:
+        #                     if ship.isEnableSet() and self.checkIsSet(index, ship.length, ship.direct, player):
+        #                         ship.changePos((x, y))
+        #                         ship.isSet = True
+        #                         ship.active = False
+        #                         ship.setIndex = index
+        #                         ship.changeColorActive()
+        #                         # self.maps[player].isClickShip = False
+        #                         ship.setColorInMap()
+
+        #                         # set rect active in map
+
+        # elif self.getStatusGame() == 2:
+            # pos = read_pos(data)
+            # if player == 0 and self.click == False:
+            #     if self.maps[1].gainAttack(pos) == 1:
+            #         self.click = True
+            # if player == 1 and self.click == True:
+            #     if self.maps[0].gainAttack(pos) == 1:
+            #         self.click = False
 
     def checkIsSet(self, index, length, direct, player):
         x = convertNumToPos(index, SIZE)[0]
