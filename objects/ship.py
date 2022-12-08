@@ -139,8 +139,9 @@ class Ship:
         return False
 
     def checkAttackIndex(self, index):
-
-        if self.direct == "vertical":
+        if self.direct == "vertical":  # setIndex = 55 -> 3 o thuyen : 55, 65, 75
+            if self.setIndex == None:
+                return False
             if index % SIZE != self.setIndex % SIZE:
                 return False
             print(index, self.setIndex, self.length)
@@ -157,7 +158,6 @@ class Ship:
         else:
             if self.setIndex <= index and index < self.setIndex + self.length:
                 index1 = index - self.setIndex
-                print(index1, "2131edasd")
                 self.rects[index1].isAttacked = True
                 self.rects[index1].changeColor(GRAY)
                 return True

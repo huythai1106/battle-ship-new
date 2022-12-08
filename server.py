@@ -1,6 +1,5 @@
 import socket
 from _thread import *
-import pickle
 from objects.game import Game
 import string
 import random
@@ -175,6 +174,8 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
 
             # gui goi tin ket thuc len web server
             print("finish game")
+            win = None
+            pygame.quit()
             break
 
         pygame.display.update()

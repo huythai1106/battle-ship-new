@@ -108,11 +108,11 @@ class Game:
                 elif self.maps[1].gainAttackIndex(data) == 1:
                     self.click = True
                     pkt_send(conn, 11, "MISS")
-                    pkt_send(conn2, 11, "MISS")
+                    pkt_send(conn2, 11, str(data))
                 # ban thanh cong va ban trung
                 elif self.maps[1].gainAttackIndex(data) == 2:
                     pkt_send(conn, 12, "HIT")
-                    pkt_send(conn2, 12, "HIT")
+                    pkt_send(conn2, 12, str(data))
                 else:
                     pkt_send(conn, 0, "LOI BAN")
 
@@ -122,10 +122,10 @@ class Game:
                 elif self.maps[0].gainAttackIndex(data) == 1:
                     self.click = False
                     pkt_send(conn, 11, "MISS")
-                    pkt_send(conn2, 11, "MISS")
+                    pkt_send(conn2, 11, str(data))
                 elif self.maps[0].gainAttackIndex(data) == 2:
                     pkt_send(conn, 12, "HIT")
-                    pkt_send(conn2, 12, "HIT")
+                    pkt_send(conn2, 12, str(data))
                 else:
                     pkt_send(conn, 0, "LOI BAN")
         else:

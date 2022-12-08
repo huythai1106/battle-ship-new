@@ -1,10 +1,12 @@
 import pygame
 from network import Network
 from objects.button import Button
+from objects.image import Image
 from utils import *
 from objects.game import Game
 import random
 import time
+from _thread import *
 
 pygame.font.init()
 pygame.mixer.init()
@@ -31,7 +33,7 @@ net = Network()
 game = None
 
 
-def redrawWindow(win, game, p):
+def redrawWindow(win, game: Game, p):
     win.fill((128, 128, 128))  # to mau nen background
     win.blit(background, (0, 0))
 
@@ -106,6 +108,8 @@ def redrawWindow(win, game, p):
                     for ship in battle.ships:
                         if ship.checkDead():
                             ship.draw(win)
+                for act in battle.actives:
+                    act.draw(win)
 
     pygame.display.update()
 
@@ -221,8 +225,7 @@ def playGameAI(game: Game, net: Network, player):
     #         pass
     if player == 0:
         net.pkt_send(10, str(10))
-        game.maps[player].gainAttackIndex(10)
-    indexAttacked = 0
+    indexAttacked = 10
 
     # type, data = net.pkt_recv()
 
@@ -246,19 +249,53 @@ def playGameAI(game: Game, net: Network, player):
                 indexAttacked = randomIndex()
                 net.pkt_send(10, str(indexAttacked))
 
+        # ban truot
         elif type == 11:
-            print(data)
-            time.sleep(2)
+            time.sleep(1)
 
-            game.maps[player].gainAttackIndex(indexAttacked)
+            if data != "MISS":
+                try:
+                    print("data: ", int(data.strip()))
+                except:
+                    print("loi")
+                    quit()
+                game.maps[player].gainAttackIndex(int(data.strip()))
+            else:
+                if player == 0:
+                    game.maps[1].gainAttackIndex(indexAttacked)
+                else:
+                    game.maps[0].gainAttackIndex(indexAttacked)
+
             game.click = not game.click
             if (player == 0 and game.click == False) or (player == 1 and game.click == True):
                 indexAttacked = randomIndex()
                 net.pkt_send(10, str(indexAttacked))
 
+        # ban trung
         elif type == 12:
-            time.sleep(2)
-            game.maps[player].gainAttackIndex(indexAttacked)
+            time.sleep(1)
+
+            if data != "HIT":
+                print(data)
+                game.maps[player].gainAttackIndex(int(data.strip()))
+                rect = game.maps[player].rects[int(data)]
+                act = Image(rect.x, rect.y,
+                            "./assets/image/attack.png")
+                game.maps[player].actives.append(act)
+
+            else:
+                if player == 0:
+                    game.maps[1].gainAttackIndex(indexAttacked)
+                    rect = game.maps[1].rects[indexAttacked]
+                    act = Image(rect.x, rect.y,
+                                "./assets/image/attack.png")
+                    game.maps[1].actives.append(act)
+                else:
+                    game.maps[0].gainAttackIndex(indexAttacked)
+                    rect = game.maps[0].rects[indexAttacked]
+                    act = Image(rect.x, rect.y,
+                                "./assets/image/attack.png")
+                    game.maps[0].actives.append(act)
 
             if (player == 0 and game.click == False) or (player == 1 and game.click == True):
                 indexAttacked = randomIndex()
@@ -276,6 +313,7 @@ def mainD():
     # firstAttack = False
     type = None
     data = None
+    playGame = False
 
     if (user_text != ""):
         data = net.startConnect(user_text, 2)
@@ -387,6 +425,10 @@ def mainD():
             # for event in pygame.event.get():
             #     if event.type == pygame.MOUSEBUTTONDOWN:
             #         pos = pygame.mouse.get_pos()
+            if not playGame:
+                playGame = True
+                start_new_thread(playGameAI, (game, net, player))
+        elif game.getStatusGame() == 3:
             break
 
         for event in pygame.event.get():
@@ -394,7 +436,7 @@ def mainD():
                 run = False
                 pygame.quit()
 
-    playGameAI(game, net, player)
+    # playGameAI(game, net, player)
     #
     quit()
 
