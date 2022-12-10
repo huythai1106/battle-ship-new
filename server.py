@@ -6,6 +6,7 @@ import random
 from utils import *
 import pygame
 import json
+from webapi import *
 
 pygame.font.init()
 pygame.mixer.init()
@@ -45,7 +46,7 @@ connected = set()
 
 games = {}
 idCount = 0
-
+passwd_to_matchId = {}
 
 # def redrawWindow(win: pygame.Surface, game: Game):
 #     if game.getStatusGame() == 1:
@@ -194,6 +195,7 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
     win = None
     print("Closing game in server: ", gameId)
     conn.close()
+    match_close_report(gameID)
 
 
 def threaded_client_handleSend(game: Game, p, data, type, conn, conn2):
@@ -367,6 +369,7 @@ while True:
         uid1 = obj["id1"]
         uid2 = obj["id2"]
         passwd = obj["passwd"]
+        passwd_to_matchId[passwd] = gameId
 
         if win == None:
             games[passwd] = {
@@ -386,8 +389,9 @@ while True:
             start_new_thread(threaded_webServer,
                              (conn, games[passwd]["game"], passwd))
         else:
-            conn.send(str.encode("Game exsit!"))
+            # conn.send(str.encode("Game exsit!"))
             conn.close()
+            match_error_report(gameId)
 
 # data = {
 # "action": 1,
