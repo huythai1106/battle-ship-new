@@ -5,6 +5,7 @@ import string
 import random
 from utils import *
 import pygame
+import json
 
 pygame.font.init()
 pygame.mixer.init()
@@ -15,8 +16,8 @@ height = 700
 win = None
 
 
-server = "127.0.0.1"
-port = 5556
+server = "localhost"
+port = 22000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -297,10 +298,11 @@ while True:
     conn, addr = s.accept()
     print("Connected to: ", addr)
 
-    type = decodeByte(conn.recv(4))
+
+    data = conn.recv(4)
+    type = decodeByte(data)
 
     if type == 1:
-
         # khi webserver gui ket noi den game server
         # matchid = decodeByte(conn.recv(4))
         # uid1 = decodeByte(conn.recv(4))
@@ -328,7 +330,8 @@ while True:
         else:
             conn.send(str.encode("Game exsit!"))
             conn.close()
-    elif type == 2:
+
+    if type == 2:
         idCount += 1
         len = decodeByte(conn.recv(4))
         data = conn.recv(len).decode()  # password
@@ -355,9 +358,49 @@ while True:
             conn.send(str.encode("Not found ID game"))
             conn.close()
             idCount -= 1
-    else:
-        pkt_send(conn, 0, "Coundn't get game")
-        conn.close()
+    else :
+        rest = conn.recv(2048)
+        fulldata = data + rest 
+        obj = json.loads(fulldata)
+        action = obj["action"]
+        gameId = obj["match"]
+        uid1 = obj["id1"]
+        uid2 = obj["id2"]
+        passwd = obj["passwd"]
+
+        if win == None:
+            games[passwd] = {
+                "game": Game(passwd),
+                "countP": 0,
+                "u1Id" : uid1,
+                "u1Id" : uid2,  
+                "conns": []
+            }
+
+            #  [Game(gameId), 0]
+            pk = '{"result": 1, "ip": "0.tcp.ap.ngrok.io", "port": 11801, "path": "path"}'
+            conn.send(pk.encode())
+            # conn.send(1)
+            # conn.close()
+            print(games)
+            start_new_thread(threaded_webServer,
+                             (conn, games[passwd]["game"], passwd))
+        else:
+            conn.send(str.encode("Game exsit!"))
+            conn.close()
+
+# data = {
+# "action": 1,
+# "match": 12,
+# "id1": id1,
+# "id2": id2,
+# "passwd": password
+# }
+
+
+        
+
+
 
     # p = 0
     # gameId = (idCount - 1) // 2

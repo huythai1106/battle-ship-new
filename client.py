@@ -459,7 +459,7 @@ def menu_screen():
                 if event.key == pygame.K_BACKSPACE:
                     user_text = user_text[:-1]
                 else:
-                    user_text += event.unicode.upper()
+                    user_text += event.unicode
 
         win.fill((128, 128, 128))
 
