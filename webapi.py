@@ -27,7 +27,7 @@ async def async_match_error_report(matchID) :
         await websocket.send(pk)
 
 def match_start_report(matchID) : 
-    asyncio.run(match_start_report(matchId))
+    asyncio.run(async_match_start_report(matchID))
 
 def match_close_report(matchID) : 
     asyncio.run(async_match_close_report(matchID))
