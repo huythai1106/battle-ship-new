@@ -7,7 +7,7 @@ class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server = "0.tcp.ap.ngrok.io"
-        self.port = 10064
+        self.port = 17305
         self.addr = (self.server, self.port)
         # self.p = self.connect()
 
@@ -15,7 +15,7 @@ class Network:
         # lay thong tin nguoi choi (0 or 1)
         return self.connect()
 
-    def startConnect(self, data: str, type: int):
+    def startConnect(self, data: str, type: int, uid : int):
         try:
             # print(data)
             self.client.connect(self.addr)
@@ -27,6 +27,7 @@ class Network:
             len1 = int.to_bytes(len(data), 4, "little")
             pk_send = type + len1 + str.encode(data)
             self.client.send(pk_send)
+            self.client.send(int.to_bytes(uid, 4, "little"))
 
             return self.pkt_recv()
         except socket.error as e:

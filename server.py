@@ -6,6 +6,7 @@ import random
 from utils import *
 import pygame
 import json
+import time
 from webapi import *
 
 pygame.font.init()
@@ -235,6 +236,7 @@ def threaded_client(conn: socket.socket, p, gameId):
     playGame = False
 
     while True:
+        time.sleep(1)
         # data = conn.recv(2048).decode()
         if gameId in games:
             game: Game = games[gameId]["game"]
@@ -357,24 +359,34 @@ while True:
         idCount += 1
         len = decodeByte(conn.recv(4))
         data = conn.recv(len).decode()  # password
+        uid = int.from_bytes(conn.recv(4), 'little')
+        print(uid)
+        
         if data in games:
             # game, p = games[data]
-            games[data]["countP"] += 1
-            if games[data]["countP"] == 1:
-                pkt_send(conn, 3, "waiting for player")
-                games[data]["conns"].append(conn)
-                start_new_thread(
-                    threaded_client, (conn, games[data]["countP"] - 1, data))
-            elif games[data]["countP"] == 2:
-                pkt_send(conn, 3, "waiting for player")
-                games[data]["conns"].append(conn)
-                games[data]["game"].ready = True
-                start_new_thread(
-                    threaded_client, (conn, games[data]["countP"] - 1, data))
+            p = -1
+            if  games[data]["uid"][0] == uid :
+                p = 0
+            elif games[data]["uid"][1] == uid :
+                p = 1
+            else :
+                pkt_send(conn, 0, "not found uid")
+                continue
+            if games[data]["countP"][p] == 0 :
+                games[data]["countP"][p] += 1
+                if games[data]["countP"][1-int(p)] == 0:
+                    pkt_send(conn, 3, "waiting for player")
+                    games[data]["conns"][p] = conn
+                    start_new_thread(
+                        threaded_client, (conn, p, data))
+                elif games[data]["countP"][1-int(p)] == 1:
+                    pkt_send(conn, 3, "waiting for player")
+                    games[data]["conns"][p] = conn
+                    games[data]["game"].ready = True
+                    start_new_thread(
+                        threaded_client, (conn, p, data))
             else:
                 pkt_send(conn, 0, "Room full")
-                games[data]["countP"] -= 1
-                conn.close()
                 idCount -= 1
         else:
             conn.send(str.encode("Not found ID game"))
@@ -395,10 +407,9 @@ while True:
         if win == None:
             games[passwd] = {
                 "game": Game(passwd),
-                "countP": 0,
-                "u1Id" : uid1,
-                "u1Id" : uid2,  
-                "conns": []
+                "countP": {0 : 0, 1 : 0},
+                "uid" : {0 : uid1, 1 : uid2}, 
+                "conns": [None, None]
             }
 
             #  [Game(gameId), 0]

@@ -8,6 +8,8 @@ import random
 import time
 from _thread import *
 
+uid = int(input())
+
 pygame.font.init()
 pygame.mixer.init()
 
@@ -121,11 +123,11 @@ btnPlay = Button("Play", 100, 500, (255, 0, 255))
 
 
 def main():
+    global uid
     run = True
     clock = pygame.time.Clock()
-
     if (user_text != ""):
-        data = net.startConnect(user_text, 0)
+        data = net.startConnect(user_text, 0, uid)
         print(data)
     else:
         return
@@ -307,6 +309,7 @@ def playGameAI(game: Game, net: Network, player):
 
 
 def mainD():
+    global uid
     run = True
     clock = pygame.time.Clock()
 
@@ -316,7 +319,7 @@ def mainD():
     playGame = False
 
     if (user_text != ""):
-        data = net.startConnect(user_text, 2)
+        data = net.startConnect(user_text, 2, uid)
         print(data)
     else:
         print("coundn't get game")
