@@ -1,7 +1,5 @@
 from .battle import Battle
 from utils import *
-import string
-import random
 
 # trung gian cua game
 
@@ -109,10 +107,14 @@ class Game:
                     self.click = True
                     pkt_send(conn, 11, "MISS")
                     pkt_send(conn2, 11, str(data))
+                    file.write(str(player) + ": " + str(data))
+
                 # ban thanh cong va ban trung
                 elif self.maps[1].gainAttackIndex(data) == 2:
                     pkt_send(conn, 12, "HIT")
                     pkt_send(conn2, 12, str(data))
+                    file.write(str(player) + ": " + str(data))
+
                 else:
                     pkt_send(conn, 0, "LOI BAN")
 
@@ -123,9 +125,11 @@ class Game:
                     self.click = False
                     pkt_send(conn, 11, "MISS")
                     pkt_send(conn2, 11, str(data))
+                    file.write(str(player) + ": " + str(data))
                 elif self.maps[0].gainAttackIndex(data) == 2:
                     pkt_send(conn, 12, "HIT")
                     pkt_send(conn2, 12, str(data))
+                    file.write(str(player) + ": " + str(data))
                 else:
                     pkt_send(conn, 0, "LOI BAN")
         else:

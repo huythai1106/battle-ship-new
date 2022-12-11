@@ -8,6 +8,7 @@ import pygame
 import json
 import time
 from webapi import *
+from file import File
 
 pygame.font.init()
 pygame.mixer.init()
@@ -18,10 +19,11 @@ height = 700
 win = None
 
 
-server = "localhost"
-port = 22000
+server = "127.0.0.1"
+port = 5556
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 
 try:
     s.bind((server, port))
@@ -164,8 +166,8 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
 
     run = True
     clock = pygame.time.Clock()
-    
-    gamestart = False    
+
+    gamestart = False
 
     while run:
         clock.tick(60)
@@ -182,23 +184,26 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
             matchid = passwd_to_matchId[gameID]
             score1 = 0
             score2 = 0
-            if game.winner() == 0 :
+            if game.winner() == 0:
                 score1 = 1
                 score2 = 0
-            else :
+            else:
                 score1 = 0
                 score2 = 1
             match_update_report(matchid, 1, score1, score2)
             match_close_report(matchid)
             print("finish game")
+            file.close()
+            file = None
             win = None
             pygame.quit()
             break
-        elif gamestart == False and status != 0 :
+        elif gamestart == False and status != 0:
             print("match start")
-            gamestart = True 
+            gamestart = True
             matchid = passwd_to_matchId[gameID]
-            match_start_report(matchid)
+            start_new_thread(match_start_report, (matchid, ))
+            # match_start_report(matchid)
 
         pygame.display.update()
 
@@ -216,7 +221,6 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
     win = None
     print("Closing game in server: ", gameId)
     conn.close()
-
 
 
 def threaded_client_handleSend(game: Game, p, data, type, conn, conn2):
@@ -322,7 +326,6 @@ while True:
     conn, addr = s.accept()
     print("Connected to: ", addr)
 
-
     data = conn.recv(4)
     type = decodeByte(data)
 
@@ -361,18 +364,18 @@ while True:
         data = conn.recv(len).decode()  # password
         uid = int.from_bytes(conn.recv(4), 'little')
         print(uid)
-        
+
         if data in games:
             # game, p = games[data]
             p = -1
-            if  games[data]["uid"][0] == uid :
+            if games[data]["uid"][0] == uid:
                 p = 0
-            elif games[data]["uid"][1] == uid :
+            elif games[data]["uid"][1] == uid:
                 p = 1
-            else :
+            else:
                 pkt_send(conn, 0, "not found uid")
                 continue
-            if games[data]["countP"][p] == 0 :
+            if games[data]["countP"][p] == 0:
                 games[data]["countP"][p] += 1
                 if games[data]["countP"][1-int(p)] == 0:
                     pkt_send(conn, 3, "waiting for player")
@@ -392,9 +395,9 @@ while True:
             conn.send(str.encode("Not found ID game"))
             conn.close()
             idCount -= 1
-    else :
+    else:
         rest = conn.recv(2048)
-        fulldata = data + rest 
+        fulldata = data + rest
         obj = json.loads(fulldata)
         print(obj)
         action = obj["action"]
@@ -405,10 +408,13 @@ while True:
         passwd_to_matchId[passwd] = gameId
 
         if win == None:
+            if file == None:
+                file = File("history.txt", "w")
+
             games[passwd] = {
                 "game": Game(passwd),
-                "countP": {0 : 0, 1 : 0},
-                "uid" : {0 : uid1, 1 : uid2}, 
+                "countP": {0: 0, 1: 0},
+                "uid": {0: uid1, 1: uid2},
                 "conns": [None, None]
             }
 
@@ -432,11 +438,6 @@ while True:
 # "id2": id2,
 # "passwd": password
 # }
-
-
-        
-
-
 
     # p = 0
     # gameId = (idCount - 1) // 2
