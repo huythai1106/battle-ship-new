@@ -39,7 +39,9 @@ def match_error_report(matchID) :
     asyncio.run(async_match_error_report(matchID))
 
 
-# matchId = 93
+# match_start_report(100)
+# match_update_report(100, 1, 6, 0)
+# match_close_report(100)
 # match_start_report(matchId)
 
 # c = 0

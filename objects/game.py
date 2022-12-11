@@ -44,7 +44,7 @@ class Game:
     def play(self, player, data, type, conn, conn2):
         # self.moves[player] = move
         # self.maps[player] = Map()
-        # print(type, data)
+        #print(type, data)
         if type == 5:  # active ship
             data = int(data)
             if self.getStatusGame() != 1:

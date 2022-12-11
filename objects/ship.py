@@ -144,7 +144,7 @@ class Ship:
                 return False
             if index % SIZE != self.setIndex % SIZE:
                 return False
-            # print(index, self.setIndex, self.length)
+           # print(index, self.setIndex, self.length)
             a = index // SIZE
             b = self.setIndex // SIZE
             c = b + self.length - 1

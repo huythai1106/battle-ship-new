@@ -253,7 +253,7 @@ def playGameAI(game: Game, net: Network, player):
 
         # ban truot
         elif type == 11:
-            time.sleep(1)
+            time.sleep(0.3)
 
             if data != "MISS":
                 try:
@@ -275,7 +275,7 @@ def playGameAI(game: Game, net: Network, player):
 
         # ban trung
         elif type == 12:
-            time.sleep(1)
+            time.sleep(0.3)
 
             if data != "HIT":
                 print(data)

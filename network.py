@@ -6,8 +6,8 @@ from utils import *
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "127.0.0.1"
-        self.port = 5556
+        self.server = "0.tcp.ap.ngrok.io"
+        self.port = 10665
         self.addr = (self.server, self.port)
         # self.p = self.connect()
 
@@ -15,7 +15,7 @@ class Network:
         # lay thong tin nguoi choi (0 or 1)
         return self.connect()
 
-    def startConnect(self, data: str, type: int, uid: int):
+    def startConnect(self, data: str, type: int, uid : int):
         try:
             # print(data)
             self.client.connect(self.addr)
