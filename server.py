@@ -163,22 +163,41 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
 
     run = True
     clock = pygame.time.Clock()
+    
+    gamestart = False    
 
     while run:
         clock.tick(60)
         win.fill((128, 128, 128))  # to mau nen background
         win.blit(background, (0, 0))
         redrawWindow(win, game)
-        if game.getStatusGame() == 3:
+        status = game.getStatusGame()
+        if status == 3:
             # redrawWindow(win, game)
             # pygame.time.delay(3000)
             # run = False
 
             # gui goi tin ket thuc len web server
+            matchid = passwd_to_matchId[gameID]
+            score1 = 0
+            score2 = 0
+            if game.winner() == 0 :
+                score1 = 1
+                score2 = 0
+            else :
+                score1 = 0
+                score2 = 1
+            match_update_report(matchid, 1, score1, score2)
+            match_close_report(matchid)
             print("finish game")
             win = None
             pygame.quit()
             break
+        elif gamestart == False and status != 0 :
+            print("match start")
+            gamestart = True 
+            matchid = passwd_to_matchId[gameID]
+            match_start_report(matchid)
 
         pygame.display.update()
 
@@ -187,6 +206,7 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
                 win = None
                 pygame.quit()
                 run = False
+                match_close_report(matchid)
 
     try:
         del games[gameID]
@@ -195,7 +215,7 @@ def threaded_webServer(conn: socket.socket, game: Game, gameID):
     win = None
     print("Closing game in server: ", gameId)
     conn.close()
-    match_close_report(gameID)
+
 
 
 def threaded_client_handleSend(game: Game, p, data, type, conn, conn2):
@@ -364,6 +384,7 @@ while True:
         rest = conn.recv(2048)
         fulldata = data + rest 
         obj = json.loads(fulldata)
+        print(obj)
         action = obj["action"]
         gameId = obj["match"]
         uid1 = obj["id1"]
