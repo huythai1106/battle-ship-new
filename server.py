@@ -8,7 +8,6 @@ import pygame
 import json
 import time
 from webapi import *
-from file import File
 
 pygame.font.init()
 pygame.mixer.init()
@@ -252,7 +251,6 @@ def threaded_client(conn: socket.socket, p, gameId):
                 game.p2Went = True
 
             if game.bothWent() and not startGame:
-                print(1)
                 pkt_send(conn, 4, "starting game")
                 startGame = True
 
@@ -264,7 +262,7 @@ def threaded_client(conn: socket.socket, p, gameId):
                         # pkt_send(conn, 0, "loi goi tin")
 
                     type, data = pkt_recv(conn)
-                    print(type, data)
+                    # print(type, data)
 
                     if type == 8:  # submit game
                         if game.maps[p].isSetAllShip():
@@ -286,14 +284,13 @@ def threaded_client(conn: socket.socket, p, gameId):
                         game.play(p, data, type, conn, conn2)
                 elif game.getStatusGame() == 2:
                     if playGame == False:
-                        print("1321213")
                         playGame = True
                         pkt_send(conn, 9, "play game")
                         continue
 
-                    print("1111: ", p)
+                    # print("1111: ", p)
                     type, data = pkt_recv(conn)
-                    print(type, data, p)
+                    # print(type, data, p)
 
                     if p == 0:
                         conn2 = games[gameId]["conns"][1]
@@ -363,7 +360,7 @@ while True:
         len = decodeByte(conn.recv(4))
         data = conn.recv(len).decode()  # password
         uid = int.from_bytes(conn.recv(4), 'little')
-        print(uid)
+        # print(uid)
 
         if data in games:
             # game, p = games[data]
@@ -408,8 +405,6 @@ while True:
         passwd_to_matchId[passwd] = gameId
 
         if win == None:
-            if file == None:
-                file = File("history.txt", "w")
 
             games[passwd] = {
                 "game": Game(passwd),

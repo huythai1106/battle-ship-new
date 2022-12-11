@@ -44,6 +44,7 @@ def pkt_recv(conn):
     data = conn.recv(len).decode()
     return (type, data)
 
+
 file = None
 
 ORANGE = (225, 93, 14)
@@ -59,4 +60,3 @@ TEXT_COLOR = (47, 77, 135)
 SIZE = 10
 WEIGHT = 27
 LINE_WEIGHT = 1
-

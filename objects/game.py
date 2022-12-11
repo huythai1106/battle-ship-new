@@ -44,7 +44,7 @@ class Game:
     def play(self, player, data, type, conn, conn2):
         # self.moves[player] = move
         # self.maps[player] = Map()
-        print(type, data)
+        # print(type, data)
         if type == 5:  # active ship
             data = int(data)
             if self.getStatusGame() != 1:
@@ -107,13 +107,14 @@ class Game:
                     self.click = True
                     pkt_send(conn, 11, "MISS")
                     pkt_send(conn2, 11, str(data))
-                    file.write(str(player) + ": " + str(data))
-
+                    print("player{} : {}".format(
+                        player, convertNumToPos(int(data), SIZE)))
                 # ban thanh cong va ban trung
                 elif self.maps[1].gainAttackIndex(data) == 2:
                     pkt_send(conn, 12, "HIT")
                     pkt_send(conn2, 12, str(data))
-                    file.write(str(player) + ": " + str(data))
+                    print("player{} : {}".format(
+                        player, convertNumToPos(int(data), SIZE)))
 
                 else:
                     pkt_send(conn, 0, "LOI BAN")
@@ -125,11 +126,15 @@ class Game:
                     self.click = False
                     pkt_send(conn, 11, "MISS")
                     pkt_send(conn2, 11, str(data))
-                    file.write(str(player) + ": " + str(data))
+                    print("player{} : {}".format(
+                        player, convertNumToPos(int(data), SIZE)))
+
                 elif self.maps[0].gainAttackIndex(data) == 2:
                     pkt_send(conn, 12, "HIT")
                     pkt_send(conn2, 12, str(data))
-                    file.write(str(player) + ": " + str(data))
+                    print("player{} : {}".format(
+                        player, convertNumToPos(int(data), SIZE)))
+
                 else:
                     pkt_send(conn, 0, "LOI BAN")
         else:
