@@ -211,11 +211,26 @@ def main():
         redrawWindow(win, game, player)
 
 
+arr = {}
+def resetRandom():
+    global arr 
+    for i in range (0,100) :
+        arr[i] = False
+
 def randomIndex():
-    return random.randint(0, 99)
+    global arr
+    while True :
+        rand = random.randint(0, 99)
+        if arr[rand] == False :
+            arr[rand] = True 
+            return rand 
+        else :
+            continue
+
 
 
 def playGameAI(game: Game, net: Network, player):
+    resetRandom()
     # if player == 0:
     #     index = randomIndex()
     #     net.pkt_send(10, str(index))
