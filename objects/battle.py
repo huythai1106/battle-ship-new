@@ -38,12 +38,21 @@ class Battle:
             x += 300
         else:
             x -= 300
+        ship1_1 = Ship(1, "vertical", self.game, x, self.y + 50, self, 0)
+        ship1_2 = Ship(1, "vertical", self.game, x +60, self.y + 50, self, 1)
+        ship1_3 = Ship(1, "vertical", self.game, x+120, self.y + 50, self, 2)
+        ship2_1 = Ship(2, "vertical", self.game, x, self.y + 100, self, 3)
+        ship2_2 = Ship(2, "vertical", self.game, x+120, self.y + 100, self, 4)
+        ship3 = Ship(3, "vertical", self.game, x, self.y + 150, self, 5)
+        ship4 = Ship(4, "vertical", self.game, x, self.y + 200, self, 6)
 
-        ship = Ship(3, "vertical", self.game, x, self.y + 200, self, 0)
-        ship1 = Ship(2, "vertical", self.game, x, self.y + 100, self, 1)
-
-        self.ships.append(ship)
-        self.ships.append(ship1)
+        self.ships.append(ship1_1)
+        self.ships.append(ship1_2)
+        self.ships.append(ship1_3)
+        self.ships.append(ship2_1)
+        self.ships.append(ship2_2)
+        self.ships.append(ship3)
+        self.ships.append(ship4)
 
     def draw(self, win):
         self.boardGame.draw(win)
