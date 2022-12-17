@@ -191,27 +191,29 @@ class Game:
         if direct == "vertical":
             if x + length > SIZE:
                 return False
-            for i in range(length):
-                x1 = x + i
-                for numX in (-1, 0, 1):
-                    for numY in (-1, 0, 1):
-                        xNum = x1 + numX
-                        yNum = y + numY
-                        if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
-                            index1 = convertPosToNum((xNum, yNum), SIZE)
+            # for i in range(length):
+                #x1 = x + i
+            for numX in (-1, 0, length):
+                for numY in (-1, 0, 1):
+                    xNum = x + numX
+                    yNum = y + numY
+                    if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
+                        index1 = convertPosToNum((xNum, yNum), SIZE)
+                        if(self.maps[player].rects[index1].isActive == False):
                             self.maps[player].rects[index1].isActive = True
             return True
         else:
             if y + length > SIZE:
                 return False
-            for i in range(length):
-                y1 = y + i
-                for numX in (-1, 0, 1):
-                    for numY in (-1, 0, 1):
-                        xNum = x + numX
-                        yNum = y1 + numY
-                        if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
-                            index1 = convertPosToNum((xNum, yNum), SIZE)
+            # for i in range(length):
+            #     y1 = y + i
+            for numX in (-1, 0, 1):
+                for numY in (-1, 0, length):
+                    xNum = x + numX
+                    yNum = y + numY
+                    if (xNum >= 0 and xNum < SIZE) and (yNum >= 0 and yNum < SIZE):
+                        index1 = convertPosToNum((xNum, yNum), SIZE)
+                        if(self.maps[player].rects[index1].isActive == False):
                             self.maps[player].rects[index1].isActive = True
             return True
 

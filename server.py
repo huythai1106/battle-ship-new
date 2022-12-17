@@ -19,7 +19,7 @@ win = None
 
 
 server = "localhost"
-port = 22000
+port = 5556
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
